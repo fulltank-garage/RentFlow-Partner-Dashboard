@@ -8,7 +8,7 @@ export default function AdminSupportPage() {
     return (
         <Box className="grid gap-4">
             <Box>
-                <Typography className="text-xl font-extrabold text-slate-900">ซัพพอร์ต</Typography>
+                <Typography variant="h6" className="text-xl font-extrabold text-slate-900">ซัพพอร์ต</Typography>
                 <Typography className="text-sm text-slate-600">
                     หน้านี้ยังไม่เปิดใช้งาน — คุณสามารถทำเป็นระบบ Ticket/แชท/ฟอร์มติดต่อได้ภายหลัง
                 </Typography>
