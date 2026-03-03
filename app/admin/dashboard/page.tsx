@@ -202,7 +202,7 @@ export default function AdminDashboardPage() {
                 className="items-start md:items-center justify-between"
             >
                 <Box>
-                    <Typography className="text-xl font-extrabold text-slate-900">
+                    <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
                         แดชบอร์ด
                     </Typography>
                     <Typography className="text-sm text-slate-600">
