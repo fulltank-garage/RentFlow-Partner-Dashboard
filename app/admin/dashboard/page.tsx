@@ -17,11 +17,11 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import DirectionsCarRoundedIcon from "@mui/icons-material/DirectionsCarRounded";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import ExtensionRoundedIcon from "@mui/icons-material/ExtensionRounded";
 import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
+import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 
 import {
   ResponsiveContainer,
@@ -96,13 +96,13 @@ const BOOKINGS_LATEST: BookingRow[] = [
 ];
 
 const SALES_SERIES: SalesRow[] = [
-  { day: "จ.", bookings: 6, revenue: 6900 },
-  { day: "อ.", bookings: 9, revenue: 11200 },
-  { day: "พ.", bookings: 7, revenue: 9100 },
-  { day: "พฤ.", bookings: 11, revenue: 13800 },
-  { day: "ศ.", bookings: 8, revenue: 9800 },
-  { day: "ส.", bookings: 12, revenue: 15600 },
-  { day: "อา.", bookings: 10, revenue: 12900 },
+  { day: "จ.", bookings: 4, revenue: 5200 },
+  { day: "อ.", bookings: 6, revenue: 7600 },
+  { day: "พ.", bookings: 5, revenue: 6800 },
+  { day: "พฤ.", bookings: 8, revenue: 10200 },
+  { day: "ศ.", bookings: 11, revenue: 14800 },
+  { day: "ส.", bookings: 15, revenue: 19800 },
+  { day: "อา.", bookings: 13, revenue: 17200 },
 ];
 
 const STATUS_DONUT: StatusDonutRow[] = [
@@ -112,8 +112,12 @@ const STATUS_DONUT: StatusDonutRow[] = [
   { name: "ยกเลิก", value: 2, key: "cancelled" },
 ];
 
-// โทนสีเรียบแบบ Slate/Emerald (ตั้งเองได้)
-const PIE_COLORS = ["#0f172a", "#64748b", "#334155", "#e2e8f0"];
+const PIE_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+];
 
 function formatTHB(n: number) {
   const value = Number.isFinite(n) ? n : 0;
@@ -166,20 +170,55 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
-      <CardContent className="p-5">
-        <Stack direction="row" spacing={1.25} className="items-start justify-between">
-          <Box>
-            <Typography className="text-xs text-slate-500">{title}</Typography>
-            <Typography className="mt-1 text-2xl font-extrabold text-slate-900">
+    <Card
+      elevation={0}
+      className="rounded-2xl! border border-slate-200 bg-white"
+      sx={{
+        transition: "all .2s",
+        "&:hover": {
+          borderColor: "rgb(203 213 225)",
+        },
+      }}
+    >
+      <CardContent className="p-4!">
+        <Stack direction="row" spacing={2} className="items-start justify-between">
+
+          <Stack spacing={0.75}>
+            <Typography className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {title}
+            </Typography>
+
+            <Typography
+              sx={{
+                fontSize: "1.75rem",
+                fontWeight: 900,
+                letterSpacing: "-0.02em",
+                color: "rgb(15 23 42)",
+              }}
+            >
               {value}
             </Typography>
-            <Typography className="mt-1 text-xs text-slate-500">{sub}</Typography>
-          </Box>
 
-          <Box className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-900">
+            <Typography className="text-xs text-slate-500">
+              {sub}
+            </Typography>
+          </Stack>
+
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: "10px",
+              display: "grid",
+              placeItems: "center",
+              border: "1px solid rgb(226 232 240)",
+              color: "rgb(37 99 235)",
+              flexShrink: 0,
+            }}
+          >
             {icon}
           </Box>
+
         </Stack>
       </CardContent>
     </Card>
@@ -213,7 +252,6 @@ function ChartTooltip({
   );
 }
 
-/* -------------------- Page -------------------- */
 export default function AdminDashboardPage() {
   const totalBookings = React.useMemo(
     () => STATUS_DONUT.reduce((a, b) => a + b.value, 0),
@@ -242,118 +280,172 @@ export default function AdminDashboardPage() {
             ภาพรวมสถิติการจอง รายได้ และงานที่ต้องจัดการวันนี้
           </Typography>
         </Box>
-
-        <Stack direction="row" spacing={1} className="flex-wrap">
-          <Button
-            component={Link}
-            href="/admin/bookings"
-            variant="outlined"
-            size="small"
-            endIcon={<ArrowForwardRoundedIcon />}
-            sx={{
-              textTransform: "none",
-              borderColor: "rgb(226 232 240)",
-              color: "rgb(15 23 42)",
-              "&:hover": { bgcolor: "rgb(248 250 252)" },
-              borderRadius: 2,
-            }}
-          >
-            ไปหน้าการจอง
-          </Button>
-
-          <Button
-            component={Link}
-            href="/admin/cars"
-            variant="contained"
-            size="small"
-            sx={{
-              textTransform: "none",
-              bgcolor: "rgb(15 23 42)",
-              boxShadow: "none",
-              "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-              borderRadius: 2,
-            }}
-          >
-            จัดการรถ
-          </Button>
-        </Stack>
       </Stack>
 
       {/* Quick actions (เน้น UX: ทางลัดงานสำคัญ) */}
       <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
-        <CardContent className="p-5">
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1}
-            className="items-start sm:items-center justify-between"
-          >
+        <CardContent className="p-4!">
+          <Stack spacing={2}>
             <Box>
               <Typography className="text-sm font-bold text-slate-900">
                 ทางลัดงานด่วน
               </Typography>
-              <Typography className="mt-1 text-xs text-slate-500">
-                เปิดหน้าที่ใช้บ่อยเพื่อลดคลิก
-              </Typography>
             </Box>
 
-            <Stack direction="row" spacing={1} className="flex-wrap">
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "repeat(2, minmax(0, 1fr))",
+                  sm: "repeat(2, minmax(0, 1fr))",
+                  md: "repeat(4, minmax(0, 1fr))",
+                },
+                gap: 2,
+              }}
+            >
+              {/* ตรวจสลิป */}
               <Button
                 component={Link}
                 href="/admin/payment-verification"
-                size="small"
                 variant="outlined"
                 startIcon={<FactCheckRoundedIcon fontSize="small" />}
                 sx={{
+                  justifyContent: "flex-start",
                   textTransform: "none",
                   borderColor: "rgb(226 232 240)",
-                  borderRadius: 2,
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  bgcolor: "#fff",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
                 }}
               >
                 ตรวจสลิป
               </Button>
+
+              {/* จองผ่านแชท */}
               <Button
                 component={Link}
                 href="/admin/leads"
-                size="small"
                 variant="outlined"
                 startIcon={<ForumRoundedIcon fontSize="small" />}
                 sx={{
+                  justifyContent: "flex-start",
                   textTransform: "none",
                   borderColor: "rgb(226 232 240)",
-                  borderRadius: 2,
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  bgcolor: "#fff",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
                 }}
               >
                 จองผ่านแชท
               </Button>
+
+              {/* บริการเสริม */}
               <Button
                 component={Link}
                 href="/admin/addons"
-                size="small"
                 variant="outlined"
                 startIcon={<ExtensionRoundedIcon fontSize="small" />}
                 sx={{
+                  justifyContent: "flex-start",
                   textTransform: "none",
                   borderColor: "rgb(226 232 240)",
-                  borderRadius: 2,
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  bgcolor: "#fff",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
                 }}
               >
-                Add-ons
+                บริการเสริม
               </Button>
+
+              {/* สาขา */}
               <Button
                 component={Link}
                 href="/admin/locations"
-                size="small"
                 variant="outlined"
                 startIcon={<PlaceRoundedIcon fontSize="small" />}
                 sx={{
+                  justifyContent: "flex-start",
                   textTransform: "none",
                   borderColor: "rgb(226 232 240)",
-                  borderRadius: 2,
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  bgcolor: "#fff",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
                 }}
               >
                 สาขา/จุดรับ-ส่ง
               </Button>
-            </Stack>
+
+              {/* ไปหน้าการจอง */}
+              <Button
+                component={Link}
+                href="/admin/bookings"
+                variant="outlined"
+                startIcon={<EventNoteRoundedIcon fontSize="small" />}
+                sx={{
+                  justifyContent: "flex-start",
+                  textTransform: "none",
+                  borderColor: "rgb(226 232 240)",
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
+                }}
+              >
+                การจอง
+              </Button>
+
+              {/* จัดการรถ */}
+              <Button
+                component={Link}
+                href="/admin/cars"
+                variant="outlined"
+                startIcon={<DirectionsCarRoundedIcon fontSize="small" />}
+                sx={{
+                  justifyContent: "flex-start",
+                  textTransform: "none",
+                  borderColor: "rgb(226 232 240)",
+                  borderRadius: 2.5,
+                  minHeight: 44,
+                  px: 1.5,
+                  color: "rgb(15 23 42)",
+                  bgcolor: "#fff",
+                  "&:hover": {
+                    borderColor: "rgb(203 213 225)",
+                    bgcolor: "rgb(248 250 252)",
+                  },
+                }}
+              >
+                จัดการรถ
+              </Button>
+            </Box>
           </Stack>
         </CardContent>
       </Card>
@@ -362,25 +454,28 @@ export default function AdminDashboardPage() {
       <Box className="grid gap-4 md:grid-cols-4">
         <KpiCard
           title="การจองวันนี้"
-          value={`${todayBookings}`}
+          value={`${todayBookings} รายการ`}
           sub="เทียบกับสัปดาห์นี้"
           icon={<CalendarMonthRoundedIcon fontSize="small" />}
         />
+
         <KpiCard
           title="รายได้วันนี้"
-          value={formatTHB(todayRevenue)}
+          value={`${formatTHB(todayRevenue)}`}
           sub="รวมค่าบริการทั้งหมด"
           icon={<PaymentsRoundedIcon fontSize="small" />}
         />
+
         <KpiCard
           title="รถพร้อมให้เช่า"
-          value={`${availableCars}`}
+          value={`${availableCars} คัน`}
           sub="จากรถทั้งหมดในระบบ"
           icon={<DirectionsCarRoundedIcon fontSize="small" />}
         />
+
         <KpiCard
           title="รอชำระ/ตรวจสอบ"
-          value={`${pendingPayments}`}
+          value={`${pendingPayments} รายการ`}
           sub="ควรตรวจสอบวันนี้"
           icon={<TrendingUpRoundedIcon fontSize="small" />}
         />
