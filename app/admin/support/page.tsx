@@ -51,7 +51,7 @@ type Branch = "bkk" | "spb";
 
 type Message = {
   id: string;
-  at: string; // ISO
+  at: string;
   from: "customer" | "agent" | "system";
   text: string;
 };
@@ -65,13 +65,13 @@ type Ticket = {
   branch: Branch;
   status: TicketStatus;
   priority: Priority;
-  owner: string | null; // admin name
+  owner: string | null;
   tags: string[];
   createdAt: string;
   updatedAt: string;
   bookingId?: string;
   lastMessage: string;
-  dueAt?: string | null; // follow-up / SLA
+  dueAt?: string | null;
   messages: Message[];
   internalNotes: string[];
 };
@@ -514,11 +514,10 @@ export default function AdminSupportPageRealMock() {
           variant="h6"
           className="text-xl font-extrabold text-slate-900"
         >
-          ซัพพอร์ต (Support)
+          ซัพพอร์ต
         </Typography>
         <Typography className="text-sm text-slate-600">
           Inbox + Ticket • ตอบแชท • Assign • ตั้งเวลาติดตาม • ผูกกับ Booking
-          (แบบจำลอง)
         </Typography>
       </Box>
 
@@ -982,12 +981,12 @@ export default function AdminSupportPageRealMock() {
         onClose={() => setOpenId(null)}
         PaperProps={{
           sx: {
-            width: isMobile ? "100%" : 500,
+            width: isMobile ? "100%" : 700,
             height: isMobile ? "80%" : "100%",
           },
         }}
       >
-        <Box className="p-5">
+        <Box className="p-4">
           {/* Header */}
           <Stack
             direction="row"
