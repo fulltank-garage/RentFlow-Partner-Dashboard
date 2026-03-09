@@ -12,7 +12,6 @@ import {
   IconButton,
   List,
   ListItemButton,
-  ListItemText,
   Stack,
   Toolbar,
   Chip,
@@ -21,11 +20,11 @@ import {
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
-import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 
 type Props = {
   onOpenMobile: () => void;
@@ -65,29 +64,60 @@ export default function AdminTopbar({
           </IconButton>
 
           <Box sx={{ ml: "auto" }}>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<PersonRoundedIcon />}
+            <IconButton
               onClick={() => setOpenProfile(true)}
               sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                borderColor: "rgb(226 232 240)",
-                color: "rgb(15 23 42)",
+                p: 0,
+                borderRadius: "999px",
                 "&:hover": {
-                  borderColor: "rgb(203 213 225)",
-                  bgcolor: "rgb(248 250 252)",
+                  bgcolor: "transparent",
                 },
               }}
             >
-              โปรไฟล์
-            </Button>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: 42,
+                  height: 42,
+                }}
+              >
+                <Avatar
+                  src="/images/admin-avatar.jpg"
+                  alt="Admin User"
+                  sx={{
+                    width: 42,
+                    height: 42,
+                    bgcolor: "rgb(148 163 184)",
+                    border: "2px solid rgb(226 232 240)"
+                  }}
+                >
+                  A
+                </Avatar>
+
+                <Box
+                  sx={{
+                    position: "absolute",
+                    right: -1,
+                    bottom: -1,
+                    width: 18,
+                    height: 18,
+                    borderRadius: "999px",
+                    bgcolor: "rgb(51 65 85)",
+                    border: "2px solid white",
+                    display: "grid",
+                    placeItems: "center",
+                  }}
+                >
+                  <KeyboardArrowDownRoundedIcon
+                    sx={{ fontSize: 14, color: "white" }}
+                  />
+                </Box>
+              </Box>
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Profile Drawer */}
       <Drawer
         anchor="right"
         open={openProfile}
@@ -134,7 +164,15 @@ export default function AdminTopbar({
 
         <Box sx={{ px: 1.5, py: 3 }}>
           <Stack direction="row" spacing={1.5} alignItems="center">
-            <Avatar sx={{ bgcolor: "rgb(15 23 42)", width: 44, height: 44 }}>
+            <Avatar
+              src="/images/admin-avatar.jpg"
+              alt="Admin User"
+              sx={{
+                width: 44,
+                height: 44,
+                bgcolor: "rgb(15 23 42)",
+              }}
+            >
               A
             </Avatar>
 
@@ -162,7 +200,6 @@ export default function AdminTopbar({
                 admin@example.com
               </Box>
 
-              {/* Quick stats */}
               <Stack
                 direction="row"
                 spacing={0.75}
@@ -210,13 +247,11 @@ export default function AdminTopbar({
               minHeight: 48,
               px: 1.5,
               py: 1.5,
-
               bgcolor: "transparent",
               "&:hover": {
                 bgcolor: "rgb(248 250 252)",
                 borderColor: "rgb(148 163 184)",
               },
-
               transition:
                 "background-color 150ms ease, border-color 150ms ease",
             }}
@@ -257,7 +292,6 @@ export default function AdminTopbar({
             <ChevronRightRoundedIcon sx={{ color: "rgb(148 163 184)" }} />
           </ListItemButton>
 
-          {/* เปลี่ยนรหัสผ่าน */}
           <ListItemButton
             onClick={() => {
               router.push("/admin/settings?tab=security");
