@@ -87,12 +87,32 @@ function formatRangeLabel(cursor: Date) {
 /* ===================== Status Tone ===================== */
 function statusTone(s: BookingStatus) {
   if (s === "confirmed")
-    return { bg: "rgb(220 252 231)", border: "rgb(134 239 172)", text: "rgb(21 128 61)", chip: "ยืนยันแล้ว" };
+    return {
+      bg: "rgb(220 252 231)",
+      border: "rgb(134 239 172)",
+      text: "rgb(21 128 61)",
+      chip: "ยืนยันแล้ว",
+    };
   if (s === "pending")
-    return { bg: "rgb(254 249 195)", border: "rgb(253 224 71)", text: "rgb(133 77 14)", chip: "รอดำเนินการ" };
+    return {
+      bg: "rgb(254 249 195)",
+      border: "rgb(253 224 71)",
+      text: "rgb(133 77 14)",
+      chip: "รอดำเนินการ",
+    };
   if (s === "completed")
-    return { bg: "rgb(219 234 254)", border: "rgb(147 197 253)", text: "rgb(30 64 175)", chip: "เสร็จสิ้น" };
-  return { bg: "rgb(254 226 226)", border: "rgb(252 165 165)", text: "rgb(153 27 27)", chip: "ยกเลิก" };
+    return {
+      bg: "rgb(219 234 254)",
+      border: "rgb(147 197 253)",
+      text: "rgb(30 64 175)",
+      chip: "เสร็จสิ้น",
+    };
+  return {
+    bg: "rgb(254 226 226)",
+    border: "rgb(252 165 165)",
+    text: "rgb(153 27 27)",
+    chip: "ยกเลิก",
+  };
 }
 
 /* ===================== Component ===================== */
@@ -134,8 +154,8 @@ export default function AdminCalendarNoMotion() {
   function handleTouchEnd(e: React.TouchEvent) {
     if (touchStartX.current === null) return;
     const diff = e.changedTouches[0].clientX - touchStartX.current;
-    if (diff > 100) setCursor((d) => addDays(d, -7));
-    if (diff < -100) setCursor((d) => addDays(d, 7));
+    if (diff > 80) setCursor((d) => addDays(d, -7));
+    if (diff < -80) setCursor((d) => addDays(d, 7));
     touchStartX.current = null;
   }
 
@@ -186,7 +206,6 @@ export default function AdminCalendarNoMotion() {
 
   return (
     <Box className="grid gap-4">
-      {/* Header (เหมือน Support Page) */}
       <Box>
         <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
           ปฏิทินรถ
@@ -196,9 +215,8 @@ export default function AdminCalendarNoMotion() {
         </Typography>
       </Box>
 
-      {/* Top Card (Summary + Controls) */}
       <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={2}
@@ -218,17 +236,27 @@ export default function AdminCalendarNoMotion() {
               </Box>
             </Stack>
 
-            <Stack direction="row" spacing={1}>
+            <Stack
+              direction={{ xs: "row", sm: "row" }}
+              spacing={1}
+              className="w-full sm:w-auto"
+            >
               <Button
+                fullWidth={isMobile}
                 variant="outlined"
                 size="small"
                 startIcon={<ChevronLeftRoundedIcon />}
                 onClick={() => setCursor((d) => addDays(d, -7))}
-                sx={{ textTransform: "none", borderRadius: 2 }}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2.5,
+                  minHeight: 38,
+                }}
               >
-                สัปดาห์ก่อน
+                ก่อนหน้า
               </Button>
               <Button
+                fullWidth={isMobile}
                 variant="contained"
                 size="small"
                 startIcon={<ChevronRightRoundedIcon />}
@@ -238,156 +266,181 @@ export default function AdminCalendarNoMotion() {
                   bgcolor: "rgb(15 23 42)",
                   boxShadow: "none",
                   "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-                  borderRadius: 2,
+                  borderRadius: 2.5,
+                  minHeight: 38,
                 }}
               >
-                สัปดาห์ถัดไป
+                ถัดไป
               </Button>
             </Stack>
           </Stack>
         </CardContent>
       </Card>
 
-      {/* Calendar Grid Card (เหมือนโทน Support) */}
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white overflow-x-auto">
+      <Card
+        elevation={0}
+        className="rounded-2xl! border border-slate-200 bg-white overflow-hidden"
+      >
         <CardContent
           className="p-0"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
           <Box
-            className="grid"
             sx={{
-              gridTemplateColumns: `240px repeat(${days.length}, 1fr)`,
-              minWidth: 980,
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
             }}
           >
-            {/* Header Row */}
-            <Box className="p-4 bg-slate-50 border-b">
-              <Typography className="text-xs font-bold text-slate-700">รถ</Typography>
-              <Typography className="text-[11px] text-slate-500 mt-0.5">
-                ลากการจองไปวางวันที่ใหม่ได้
-              </Typography>
-            </Box>
-
-            {days.map((d) => (
-              <Box
-                key={d}
-                className="p-4 bg-slate-50 border-l border-b"
-              >
-                <Typography className="text-xs font-bold text-slate-700">{d}</Typography>
-                <Typography className="text-[11px] text-slate-500 mt-0.5">วางเพื่อย้าย</Typography>
-              </Box>
-            ))}
-
-            {/* Rows */}
-            {CARS.map((car) => (
-              <React.Fragment key={car.id}>
-                <Box className="p-4 border-b">
-                  <Typography className="text-sm font-semibold text-slate-900">
-                    {car.name}
-                  </Typography>
+            <Box
+              className="grid"
+              sx={{
+                gridTemplateColumns: isMobile
+                  ? `170px repeat(${days.length}, 130px)`
+                  : `240px repeat(${days.length}, 1fr)`,
+                minWidth: isMobile ? 1080 : 980,
+              }}
+            >
+              <Box className="p-3 sm:p-4 bg-slate-50 border-b sticky left-0 z-10">
+                <Box className="rounded-r-none">
+                  <Typography className="text-xs font-bold text-slate-700">รถ</Typography>
                   <Typography className="text-[11px] text-slate-500 mt-0.5">
-                    {BRANCHES.find((b) => b.id === car.branchId)?.name ?? "-"}
+                    แตะหรือ drag เพื่อย้าย
                   </Typography>
                 </Box>
+              </Box>
 
-                {days.map((day) => {
-                  const booking = bookings.find(
-                    (b) =>
-                      b.carId === car.id &&
-                      overlaps(
-                        day,
-                        toYMD(addDays(parseYMD(day), 1)),
-                        b.start,
-                        b.end
-                      )
-                  );
+              {days.map((d) => (
+                <Box
+                  key={d}
+                  className="p-3 sm:p-4 bg-slate-50 border-l border-b"
+                >
+                  <Typography className="text-xs font-bold text-slate-700">{d}</Typography>
+                  <Typography className="text-[11px] text-slate-500 mt-0.5">
+                    วางที่นี่
+                  </Typography>
+                </Box>
+              ))}
 
-                  return (
-                    <Box
-                      key={day}
-                      className="p-2 border-l border-b"
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        const id = e.dataTransfer.getData("id");
-                        if (id) move(id, day);
-                      }}
-                    >
-                      {booking && (
-                        <Tooltip
-                          arrow
-                          placement="top"
-                          title={
-                            <Box className="text-xs">
-                              <div className="font-semibold">{booking.id}</div>
-                              <div className="opacity-90">
-                                {booking.customer} • {booking.start} → {booking.end}
-                              </div>
-                            </Box>
-                          }
-                        >
-                          <Box
-                            draggable
-                            onDragStart={(e) => e.dataTransfer.setData("id", booking.id)}
-                            onClick={() => setSelectedId(booking.id)}
-                            sx={{
-                              bgcolor: statusTone(booking.status).bg,
-                              border: `1px solid ${statusTone(booking.status).border}`,
-                              color: statusTone(booking.status).text,
-                            }}
-                            className="rounded-xl p-2 text-xs cursor-pointer"
+              {CARS.map((car) => (
+                <React.Fragment key={car.id}>
+                  <Box className="p-3 sm:p-4 border-b bg-white sticky left-0 z-10">
+                    <Typography className="text-sm font-semibold text-slate-900">
+                      {car.name}
+                    </Typography>
+                    <Typography className="text-[11px] text-slate-500 mt-0.5">
+                      {BRANCHES.find((b) => b.id === car.branchId)?.name ?? "-"}
+                    </Typography>
+                  </Box>
+
+                  {days.map((day) => {
+                    const booking = bookings.find(
+                      (b) =>
+                        b.carId === car.id &&
+                        overlaps(
+                          day,
+                          toYMD(addDays(parseYMD(day), 1)),
+                          b.start,
+                          b.end
+                        )
+                    );
+
+                    return (
+                      <Box
+                        key={day}
+                        className="p-2 border-l border-b"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          const id = e.dataTransfer.getData("id");
+                          if (id) move(id, day);
+                        }}
+                        sx={{
+                          minHeight: isMobile ? 86 : 78,
+                          bgcolor: booking ? "transparent" : "white",
+                        }}
+                      >
+                        {booking && (
+                          <Tooltip
+                            arrow
+                            placement="top"
+                            title={
+                              <Box className="text-xs">
+                                <div className="font-semibold">{booking.id}</div>
+                                <div className="opacity-90">
+                                  {booking.customer} • {booking.start} → {booking.end}
+                                </div>
+                              </Box>
+                            }
                           >
-                            <Stack direction="row" spacing={1} className="items-center justify-between">
-                              <Typography className="text-xs font-semibold">
-                                {booking.id}
+                            <Box
+                              draggable
+                              onDragStart={(e) => e.dataTransfer.setData("id", booking.id)}
+                              onClick={() => setSelectedId(booking.id)}
+                              sx={{
+                                bgcolor: statusTone(booking.status).bg,
+                                border: `1px solid ${statusTone(booking.status).border}`,
+                                color: statusTone(booking.status).text,
+                                minHeight: isMobile ? 66 : 58,
+                              }}
+                              className="rounded-xl p-2.5 text-xs cursor-pointer"
+                            >
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                className="items-center justify-between"
+                              >
+                                <Typography className="text-xs font-semibold">
+                                  {booking.id}
+                                </Typography>
+                                <Chip
+                                  size="small"
+                                  label={statusTone(booking.status).chip}
+                                  sx={{
+                                    height: 20,
+                                    fontSize: 10,
+                                    bgcolor: "rgba(255,255,255,0.7)",
+                                    border: "1px solid rgba(0,0,0,0.06)",
+                                  }}
+                                />
+                              </Stack>
+
+                              <Typography className="text-[11px] mt-1 opacity-90 line-clamp-2">
+                                {booking.customer}
                               </Typography>
-                              <Chip
-                                size="small"
-                                label={statusTone(booking.status).chip}
-                                sx={{
-                                  height: 20,
-                                  fontSize: 11,
-                                  bgcolor: "rgba(255,255,255,0.65)",
-                                  border: "1px solid rgba(0,0,0,0.06)",
-                                }}
-                              />
-                            </Stack>
-                            <Typography className="text-[11px] mt-1 opacity-90">
-                              {booking.customer}
-                            </Typography>
-                          </Box>
-                        </Tooltip>
-                      )}
-                    </Box>
-                  );
-                })}
-              </React.Fragment>
-            ))}
+                            </Box>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+            </Box>
           </Box>
         </CardContent>
       </Card>
 
-      {/* Drawer (Detail) */}
       <Drawer
         anchor={isMobile ? "bottom" : "right"}
         open={!!selected}
         onClose={() => setSelectedId(null)}
         PaperProps={{
           sx: {
-            height: isMobile ? "62%" : "100%",
+            height: isMobile ? "78%" : "100%",
             width: isMobile ? "100%" : 420,
-            borderTopLeftRadius: isMobile ? 18 : 0,
-            borderTopRightRadius: isMobile ? 18 : 0,
+            borderTopLeftRadius: isMobile ? 20 : 0,
+            borderTopRightRadius: isMobile ? 20 : 0,
           },
         }}
       >
         {selected && (
-          <Box className="p-5">
+          <Box className="p-4 sm:p-5">
+            {isMobile ? (
+              <Box className="mx-auto mb-3 h-1.5 w-14 rounded-full bg-slate-200" />
+            ) : null}
+
             <Stack direction="row" spacing={1.25} className="items-center">
-              <Box
-                className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-slate-50"
-              >
+              <Box className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-slate-50">
                 <EventNoteRoundedIcon fontSize="small" />
               </Box>
               <Box className="min-w-0">
@@ -402,7 +455,7 @@ export default function AdminCalendarNoMotion() {
 
             <Divider className="my-4 border-slate-200!" />
 
-            <Stack spacing={1.25}>
+            <Stack spacing={1.5}>
               <Stack direction="row" spacing={1} className="items-center justify-between">
                 <Typography className="text-sm font-semibold text-slate-900">
                   สถานะ
@@ -436,17 +489,27 @@ export default function AdminCalendarNoMotion() {
                 ปรับระยะเวลา
               </Typography>
 
-              <Stack direction="row" spacing={1} className="mt-1">
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1}
+                className="mt-1"
+              >
                 <Button
+                  fullWidth={isMobile}
                   variant="outlined"
                   onClick={() => resize(selected.id, -1)}
                   startIcon={<RemoveRoundedIcon />}
-                  sx={{ textTransform: "none", borderRadius: 2 }}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2.5,
+                    minHeight: 42,
+                  }}
                 >
                   ลด 1 วัน
                 </Button>
 
                 <Button
+                  fullWidth={isMobile}
                   variant="contained"
                   onClick={() => resize(selected.id, 1)}
                   startIcon={<AddRoundedIcon />}
@@ -455,15 +518,16 @@ export default function AdminCalendarNoMotion() {
                     bgcolor: "rgb(15 23 42)",
                     boxShadow: "none",
                     "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-                    borderRadius: 2,
+                    borderRadius: 2.5,
+                    minHeight: 42,
                   }}
                 >
                   เพิ่ม 1 วัน
                 </Button>
               </Stack>
 
-              <Typography className="text-[11px] text-slate-500 mt-2">
-                * ระบบจะกันการชนกันของวันจองสำหรับรถคันเดียวกันโดยอัตโนมัติ
+              <Typography className="text-[11px] text-slate-500 mt-1">
+                ระบบจะกันการชนกันของวันจองสำหรับรถคันเดียวกันโดยอัตโนมัติ
               </Typography>
             </Stack>
           </Box>
@@ -474,8 +538,9 @@ export default function AdminCalendarNoMotion() {
         open={snack.open}
         autoHideDuration={2500}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity={snack.type} variant="filled">
+        <Alert severity={snack.type} variant="filled" sx={{ borderRadius: 3 }}>
           {snack.msg}
         </Alert>
       </Snackbar>
