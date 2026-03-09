@@ -81,10 +81,9 @@ function overlaps(aStart: string, aEnd: string, bStart: string, bEnd: string) {
 function formatRangeLabel(cursor: Date) {
   const start = toYMD(cursor);
   const end = toYMD(addDays(cursor, 6));
-  return `${start} → ${end}`;
+  return `${start} ถึง ${end}`;
 }
 
-/* ===================== Status Tone ===================== */
 function statusTone(s: BookingStatus) {
   if (s === "confirmed")
     return {
@@ -115,7 +114,6 @@ function statusTone(s: BookingStatus) {
   };
 }
 
-/* ===================== Component ===================== */
 export default function AdminCalendarNoMotion() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -146,7 +144,6 @@ export default function AdminCalendarNoMotion() {
     [cursor]
   );
 
-  /* ================= Swipe Native ================= */
   const touchStartX = React.useRef<number | null>(null);
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX;
@@ -159,7 +156,6 @@ export default function AdminCalendarNoMotion() {
     touchStartX.current = null;
   }
 
-  /* ================= Conflict & Update ================= */
   function updateBooking(next: Booking) {
     const conflict = bookings.some(
       (b) =>
@@ -207,15 +203,22 @@ export default function AdminCalendarNoMotion() {
   return (
     <Box className="grid gap-4">
       <Box>
-        <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+        <Typography
+          variant="h6"
+          className="text-xl font-extrabold text-slate-900"
+        >
           ปฏิทินรถ
         </Typography>
         <Typography className="text-sm text-slate-600">
-          จัดการการจองแบบรายสัปดาห์ — ลากเพื่อย้ายวัน, ปรับระยะเวลาในแถบรายละเอียด, และปัดซ้าย/ขวาบนมือถือเพื่อเลื่อนสัปดาห์
+          จัดการการจองแบบรายสัปดาห์ — ลากเพื่อย้ายวัน,
+          ปรับระยะเวลาในแถบรายละเอียด, และปัดซ้าย/ขวาบนมือถือเพื่อเลื่อนสัปดาห์
         </Typography>
       </Box>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card
+        elevation={0}
+        className="rounded-2xl! border border-slate-200 bg-white"
+      >
         <CardContent className="p-4 sm:p-5">
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -231,7 +234,8 @@ export default function AdminCalendarNoMotion() {
                   {formatRangeLabel(cursor)}
                 </Typography>
                 <Typography className="mt-1 text-xs text-slate-500">
-                  ทั้งหมด {bookingCount} รายการ • รถ {CARS.length} คัน • สาขา {BRANCHES.length} แห่ง
+                  ทั้งหมด {bookingCount} รายการ • รถ {CARS.length} คัน • สาขา{" "}
+                  {BRANCHES.length} แห่ง
                 </Typography>
               </Box>
             </Stack>
@@ -259,7 +263,7 @@ export default function AdminCalendarNoMotion() {
                 fullWidth={isMobile}
                 variant="contained"
                 size="small"
-                startIcon={<ChevronRightRoundedIcon />}
+                endIcon={<ChevronRightRoundedIcon />}
                 onClick={() => setCursor((d) => addDays(d, 7))}
                 sx={{
                   textTransform: "none",
@@ -303,7 +307,9 @@ export default function AdminCalendarNoMotion() {
             >
               <Box className="p-3 sm:p-4 bg-slate-50 border-b sticky left-0 z-10">
                 <Box className="rounded-r-none">
-                  <Typography className="text-xs font-bold text-slate-700">รถ</Typography>
+                  <Typography className="text-xs font-bold text-slate-700">
+                    รถ
+                  </Typography>
                   <Typography className="text-[11px] text-slate-500 mt-0.5">
                     แตะหรือ drag เพื่อย้าย
                   </Typography>
@@ -315,7 +321,9 @@ export default function AdminCalendarNoMotion() {
                   key={d}
                   className="p-3 sm:p-4 bg-slate-50 border-l border-b"
                 >
-                  <Typography className="text-xs font-bold text-slate-700">{d}</Typography>
+                  <Typography className="text-xs font-bold text-slate-700">
+                    {d}
+                  </Typography>
                   <Typography className="text-[11px] text-slate-500 mt-0.5">
                     วางที่นี่
                   </Typography>
@@ -365,20 +373,27 @@ export default function AdminCalendarNoMotion() {
                             placement="top"
                             title={
                               <Box className="text-xs">
-                                <div className="font-semibold">{booking.id}</div>
+                                <div className="font-semibold">
+                                  {booking.id}
+                                </div>
                                 <div className="opacity-90">
-                                  {booking.customer} • {booking.start} → {booking.end}
+                                  {booking.customer} • {booking.start} →{" "}
+                                  {booking.end}
                                 </div>
                               </Box>
                             }
                           >
                             <Box
                               draggable
-                              onDragStart={(e) => e.dataTransfer.setData("id", booking.id)}
+                              onDragStart={(e) =>
+                                e.dataTransfer.setData("id", booking.id)
+                              }
                               onClick={() => setSelectedId(booking.id)}
                               sx={{
                                 bgcolor: statusTone(booking.status).bg,
-                                border: `1px solid ${statusTone(booking.status).border}`,
+                                border: `1px solid ${
+                                  statusTone(booking.status).border
+                                }`,
                                 color: statusTone(booking.status).text,
                                 minHeight: isMobile ? 66 : 58,
                               }}
@@ -448,7 +463,8 @@ export default function AdminCalendarNoMotion() {
                   {selected.id}
                 </Typography>
                 <Typography className="text-xs text-slate-500 mt-0.5">
-                  {selected.start} → {selected.end} ({diffDays(selected.start, selected.end)} วัน)
+                  {selected.start} → {selected.end} (
+                  {diffDays(selected.start, selected.end)} วัน)
                 </Typography>
               </Box>
             </Stack>
@@ -456,7 +472,11 @@ export default function AdminCalendarNoMotion() {
             <Divider className="my-4 border-slate-200!" />
 
             <Stack spacing={1.5}>
-              <Stack direction="row" spacing={1} className="items-center justify-between">
+              <Stack
+                direction="row"
+                spacing={1}
+                className="items-center justify-between"
+              >
                 <Typography className="text-sm font-semibold text-slate-900">
                   สถานะ
                 </Typography>
@@ -473,7 +493,8 @@ export default function AdminCalendarNoMotion() {
               </Stack>
 
               <Typography className="text-sm text-slate-700">
-                ลูกค้า: <span className="font-semibold">{selected.customer}</span>
+                ลูกค้า:{" "}
+                <span className="font-semibold">{selected.customer}</span>
               </Typography>
 
               <Typography className="text-sm text-slate-700">
@@ -538,9 +559,15 @@ export default function AdminCalendarNoMotion() {
         open={snack.open}
         autoHideDuration={2500}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{ top: 24 }}
       >
-        <Alert severity={snack.type} variant="filled" sx={{ borderRadius: 3 }}>
+        <Alert
+          severity={snack.type}
+          variant="filled"
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ borderRadius: 3 }}
+        >
           {snack.msg}
         </Alert>
       </Snackbar>
