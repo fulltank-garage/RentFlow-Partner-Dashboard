@@ -124,7 +124,10 @@ const SEED: Lead[] = [
 
 function formatTHB(n: number) {
   const v = Number.isFinite(n) ? n : 0;
-  return new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(v) + " บาท";
+  return (
+    new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(v) +
+    " บาท"
+  );
 }
 
 function formatDateTimeTH(iso: string) {
@@ -187,7 +190,13 @@ function toTelHref(phone: string) {
 
 function toChatHref(channel: Lead["channel"], lead: Lead) {
   const msg = encodeURIComponent(
-    `สนใจจองรถ (Lead ${lead.id})\nชื่อ: ${lead.name}\nโทร: ${lead.phone}\nรถ: ${lead.carName ?? "-"}\nรับ: ${lead.pickupDate ?? "-"} (${lead.pickupPoint ?? "-"})\nคืน: ${lead.returnDate ?? "-"} (${lead.returnPoint ?? "-"})\nยอดประมาณ: ${formatTHB(lead.amountEstimate)}\nรายละเอียด: ${lead.summaryText}`
+    `สนใจจองรถ (Lead ${lead.id})\nชื่อ: ${lead.name}\nโทร: ${lead.phone}\nรถ: ${
+      lead.carName ?? "-"
+    }\nรับ: ${lead.pickupDate ?? "-"} (${lead.pickupPoint ?? "-"})\nคืน: ${
+      lead.returnDate ?? "-"
+    } (${lead.returnPoint ?? "-"})\nยอดประมาณ: ${formatTHB(
+      lead.amountEstimate
+    )}\nรายละเอียด: ${lead.summaryText}`
   );
 
   if (channel === "line") return `https://line.me/R/msg/text/?${msg}`;
@@ -229,16 +238,21 @@ function followUpBadge(followUpAt?: string | null) {
   const startDayAfter = new Date(startTomorrow);
   startDayAfter.setDate(startDayAfter.getDate() + 1);
 
-  if (due.getTime() < now.getTime()) return { label: "เกินกำหนด", tone: "rose" as const };
-  if (due >= startToday && due < startTomorrow) return { label: "ติดตามวันนี้", tone: "amber" as const };
-  if (due >= startTomorrow && due < startDayAfter) return { label: "ติดตามพรุ่งนี้", tone: "sky" as const };
+  if (due.getTime() < now.getTime())
+    return { label: "เกินกำหนด", tone: "rose" as const };
+  if (due >= startToday && due < startTomorrow)
+    return { label: "ติดตามวันนี้", tone: "amber" as const };
+  if (due >= startTomorrow && due < startDayAfter)
+    return { label: "ติดตามพรุ่งนี้", tone: "sky" as const };
   return { label: "มีนัดติดตาม", tone: "slate" as const };
 }
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Box className="grid grid-cols-1 gap-1 sm:grid-cols-[120px_1fr]">
-      <Typography className="text-sm font-medium text-slate-500">{label}</Typography>
+      <Typography className="text-sm font-medium text-slate-500">
+        {label}
+      </Typography>
       <Box className="text-sm font-semibold text-slate-900">{value}</Box>
     </Box>
   );
@@ -253,7 +267,9 @@ function SectionCard({
 }) {
   return (
     <Box className="rounded-2xl border border-slate-200 bg-white p-4">
-      <Typography className="text-sm font-bold text-slate-900">{title}</Typography>
+      <Typography className="text-sm font-bold text-slate-900">
+        {title}
+      </Typography>
       <Divider className="my-3 border-slate-200!" />
       <Stack spacing={2}>{children}</Stack>
     </Box>
@@ -271,7 +287,10 @@ export default function AdminLeadsPage() {
   const [channel, setChannel] = React.useState<Lead["channel"] | "all">("all");
 
   const [openId, setOpenId] = React.useState<string | null>(null);
-  const selected = React.useMemo(() => rows.find((r) => r.id === openId) ?? null, [rows, openId]);
+  const selected = React.useMemo(
+    () => rows.find((r) => r.id === openId) ?? null,
+    [rows, openId]
+  );
 
   const [followUpLocal, setFollowUpLocal] = React.useState("");
 
@@ -283,7 +302,9 @@ export default function AdminLeadsPage() {
     const d = new Date(selected.followUpAt);
     const pad = (n: number) => String(n).padStart(2, "0");
     setFollowUpLocal(
-      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+        d.getHours()
+      )}:${pad(d.getMinutes())}`
     );
   }, [selected?.id, selected?.followUpAt]);
 
@@ -382,7 +403,11 @@ export default function AdminLeadsPage() {
     d.setDate(d.getDate() + 1);
     d.setHours(10, 0, 0, 0);
     updateLead(selected.id, { followUpAt: d.toISOString() });
-    setSnack({ open: true, msg: "ตั้งเวลาติดตาม (พรุ่งนี้ 10:00) แล้ว", type: "success" });
+    setSnack({
+      open: true,
+      msg: "ตั้งเวลาติดตาม (พรุ่งนี้ 10:00) แล้ว",
+      type: "success",
+    });
   }
 
   function clearFollowUp() {
@@ -394,7 +419,10 @@ export default function AdminLeadsPage() {
   return (
     <Box className="grid gap-4">
       <Box>
-        <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+        <Typography
+          variant="h6"
+          className="text-xl font-extrabold text-slate-900"
+        >
           จองผ่านแชท
         </Typography>
         <Typography className="text-sm text-slate-600">
@@ -402,7 +430,10 @@ export default function AdminLeadsPage() {
         </Typography>
       </Box>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card
+        elevation={0}
+        className="rounded-2xl! border border-slate-200 bg-white"
+      >
         <CardContent className="p-5">
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -415,9 +446,12 @@ export default function AdminLeadsPage() {
               </Box>
 
               <Box>
-                <Typography className="text-sm font-bold text-slate-900">สรุป Leads</Typography>
+                <Typography className="text-sm font-bold text-slate-900">
+                  สรุป Leads
+                </Typography>
                 <Typography className="mt-1 text-xs text-slate-500">
-                  ทั้งหมด {kpi.total} • ใหม่ {kpi.newCount} • ติดตาม {kpi.contacted} • ปิด {kpi.won} • ไม่สำเร็จ {kpi.lost}
+                  ทั้งหมด {kpi.total} • ใหม่ {kpi.newCount} • ติดตาม{" "}
+                  {kpi.contacted} • ปิด {kpi.won} • ไม่สำเร็จ {kpi.lost}
                 </Typography>
               </Box>
             </Stack>
@@ -505,9 +539,16 @@ export default function AdminLeadsPage() {
         ))}
       </Box>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card
+        elevation={0}
+        className="rounded-2xl! border border-slate-200 bg-white"
+      >
         <CardContent className="p-5">
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2} className="items-stretch md:items-center">
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            className="items-stretch md:items-center"
+          >
             <TextField
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -551,7 +592,9 @@ export default function AdminLeadsPage() {
               select
               label="ช่องทาง"
               value={channel}
-              onChange={(e) => setChannel(e.target.value as Lead["channel"] | "all")}
+              onChange={(e) =>
+                setChannel(e.target.value as Lead["channel"] | "all")
+              }
               size="small"
               sx={roundedFieldSX}
               className="min-w-40"
@@ -566,11 +609,18 @@ export default function AdminLeadsPage() {
         </CardContent>
       </Card>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card
+        elevation={0}
+        className="rounded-2xl! border border-slate-200 bg-white"
+      >
         <CardContent className="p-0">
           <Box className="px-5 py-4 flex items-center justify-between">
-            <Typography className="text-sm font-bold text-slate-900">Leads List</Typography>
-            <Typography className="text-xs text-slate-500">{filtered.length} รายการ</Typography>
+            <Typography className="text-sm font-bold text-slate-900">
+              Leads List
+            </Typography>
+            <Typography className="text-xs text-slate-500">
+              {filtered.length} รายการ
+            </Typography>
           </Box>
           <Divider className="border-slate-200!" />
 
@@ -580,15 +630,24 @@ export default function AdminLeadsPage() {
               const fu = followUpBadge(r.followUpAt);
 
               return (
-                <Box key={r.id} className="px-5 py-4 hover:bg-slate-50 transition-colors">
+                <Box
+                  key={r.id}
+                  className="px-5 py-4 hover:bg-slate-50 transition-colors"
+                >
                   <Stack
                     direction={{ xs: "column", lg: "row" }}
                     spacing={2}
                     className="items-start lg:items-center justify-between"
                   >
                     <Box className="min-w-0">
-                      <Stack direction="row" spacing={1} className="items-center flex-wrap">
-                        <Typography className="text-sm font-black text-slate-900">{r.id}</Typography>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        className="items-center flex-wrap"
+                      >
+                        <Typography className="text-sm font-black text-slate-900">
+                          {r.id}
+                        </Typography>
 
                         <Chip
                           size="small"
@@ -601,8 +660,16 @@ export default function AdminLeadsPage() {
                           }}
                         />
 
-                        <Chip size="small" label={channelLabel(r.channel)} variant="outlined" />
-                        <Chip size="small" label={formatTHB(r.amountEstimate)} variant="outlined" />
+                        <Chip
+                          size="small"
+                          label={channelLabel(r.channel)}
+                          variant="outlined"
+                        />
+                        <Chip
+                          size="small"
+                          label={formatTHB(r.amountEstimate)}
+                          variant="outlined"
+                        />
                         <Chip
                           size="small"
                           label={formatDateTimeTH(r.createdAt)}
@@ -626,7 +693,13 @@ export default function AdminLeadsPage() {
                                     bgcolor: "rgb(248 250 252)",
                                     color: "rgb(51 65 85)",
                                   }
-                                : statusChipSX(fu.tone === "amber" ? "amber" : fu.tone === "sky" ? "sky" : "rose")),
+                                : statusChipSX(
+                                    fu.tone === "amber"
+                                      ? "amber"
+                                      : fu.tone === "sky"
+                                      ? "sky"
+                                      : "rose"
+                                  )),
                             }}
                           />
                         ) : null}
@@ -640,7 +713,11 @@ export default function AdminLeadsPage() {
                       </Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={1} className="items-center flex-wrap">
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      className="items-center flex-wrap"
+                    >
                       <Tooltip title="โทร">
                         <IconButton component="a" href={toTelHref(r.phone)}>
                           <CallRoundedIcon />
@@ -662,7 +739,9 @@ export default function AdminLeadsPage() {
                         select
                         size="small"
                         value={r.status}
-                        onChange={(e) => updateStatus(r.id, e.target.value as LeadStatus)}
+                        onChange={(e) =>
+                          updateStatus(r.id, e.target.value as LeadStatus)
+                        }
                         sx={{
                           ...roundedFieldSX,
                           minWidth: 160,
@@ -686,7 +765,10 @@ export default function AdminLeadsPage() {
                           textTransform: "none",
                           bgcolor: "rgb(15 23 42)",
                           boxShadow: "none",
-                          "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
+                          "&:hover": {
+                            bgcolor: "rgb(2 6 23)",
+                            boxShadow: "none",
+                          },
                           borderRadius: 2,
                         }}
                       >
@@ -700,8 +782,12 @@ export default function AdminLeadsPage() {
 
             {filtered.length === 0 ? (
               <Box className="px-5 py-10 text-center">
-                <Typography className="text-sm font-semibold text-slate-900">ไม่พบข้อมูล</Typography>
-                <Typography className="mt-1 text-xs text-slate-500">ลองปรับตัวกรอง หรือค้นหาใหม่</Typography>
+                <Typography className="text-sm font-semibold text-slate-900">
+                  ไม่พบข้อมูล
+                </Typography>
+                <Typography className="mt-1 text-xs text-slate-500">
+                  ลองปรับตัวกรอง หรือค้นหาใหม่
+                </Typography>
               </Box>
             ) : null}
           </Box>
@@ -720,8 +806,16 @@ export default function AdminLeadsPage() {
         }}
       >
         <Box className="p-4">
-          <Stack direction="row" spacing={1.25} className="items-center justify-between">
-            <Stack direction="row" spacing={1.25} className="items-center min-w-0">
+          <Stack
+            direction="row"
+            spacing={1.25}
+            className="items-center justify-between"
+          >
+            <Stack
+              direction="row"
+              spacing={1.25}
+              className="items-center min-w-0"
+            >
               <Avatar
                 sx={{
                   width: 42,
@@ -793,9 +887,12 @@ export default function AdminLeadsPage() {
                       {selected.carName ?? "ยังไม่ได้ระบุรถ"}
                     </Typography>
                     <Typography className="mt-2 text-sm text-slate-200">
-                      {selected.pickupDate ?? "-"} ถึง {selected.returnDate ?? "-"}
+                      {selected.pickupDate ?? "-"} ถึง{" "}
+                      {selected.returnDate ?? "-"}
                     </Typography>
-                    <Typography className="mt-4 text-sm text-slate-300">ยอดประมาณ</Typography>
+                    <Typography className="mt-4 text-sm text-slate-300">
+                      ยอดประมาณ
+                    </Typography>
                     <Typography className="text-2xl font-extrabold">
                       {formatTHB(selected.amountEstimate)}
                     </Typography>
@@ -858,28 +955,63 @@ export default function AdminLeadsPage() {
                 <SectionCard title="ข้อมูลลูกค้า">
                   <InfoRow label="ชื่อ" value={selected.name} />
                   <InfoRow label="เบอร์โทร" value={selected.phone} />
-                  <InfoRow label="ช่องทาง" value={channelLabel(selected.channel)} />
-                  <InfoRow label="สถานะ" value={<Chip size="small" label={statusMeta(selected.status).label} sx={statusChipSX(statusMeta(selected.status).tone)} />} />
+                  <InfoRow
+                    label="ช่องทาง"
+                    value={channelLabel(selected.channel)}
+                  />
+                  <InfoRow
+                    label="สถานะ"
+                    value={
+                      <Chip
+                        size="small"
+                        label={statusMeta(selected.status).label}
+                        sx={statusChipSX(statusMeta(selected.status).tone)}
+                      />
+                    }
+                  />
                 </SectionCard>
 
                 <SectionCard title="ข้อมูลการจอง">
                   <InfoRow label="รถ" value={selected.carName ?? "-"} />
-                  <InfoRow label="วันรับรถ" value={selected.pickupDate ?? "-"} />
-                  <InfoRow label="วันคืนรถ" value={selected.returnDate ?? "-"} />
-                  <InfoRow label="ยอดประมาณ" value={formatTHB(selected.amountEstimate)} />
+                  <InfoRow
+                    label="วันรับรถ"
+                    value={selected.pickupDate ?? "-"}
+                  />
+                  <InfoRow
+                    label="วันคืนรถ"
+                    value={selected.returnDate ?? "-"}
+                  />
+                  <InfoRow
+                    label="ยอดประมาณ"
+                    value={formatTHB(selected.amountEstimate)}
+                  />
                 </SectionCard>
 
                 <SectionCard title="สถานที่">
-                  <InfoRow label="จุดรับรถ" value={selected.pickupPoint ?? "-"} />
-                  <InfoRow label="จุดคืนรถ" value={selected.returnPoint ?? "-"} />
-                  <InfoRow label="สร้างเมื่อ" value={formatDateTimeTH(selected.createdAt)} />
+                  <InfoRow
+                    label="จุดรับรถ"
+                    value={selected.pickupPoint ?? "-"}
+                  />
+                  <InfoRow
+                    label="จุดคืนรถ"
+                    value={selected.returnPoint ?? "-"}
+                  />
+                  <InfoRow
+                    label="สร้างเมื่อ"
+                    value={formatDateTimeTH(selected.createdAt)}
+                  />
                 </SectionCard>
 
                 <SectionCard title="สรุป lead">
                   <Stack spacing={2}>
                     <Box>
-                      <Stack direction="row" className="items-center justify-between">
-                        <Typography className="text-xs text-slate-500">ข้อความสรุป</Typography>
+                      <Stack
+                        direction="row"
+                        className="items-center justify-between"
+                      >
+                        <Typography className="text-xs text-slate-500">
+                          ข้อความสรุป
+                        </Typography>
                         <Button
                           size="small"
                           variant="outlined"
@@ -1018,14 +1150,16 @@ export default function AdminLeadsPage() {
 
       <Snackbar
         open={snack.open}
-        autoHideDuration={2200}
+        autoHideDuration={2500}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{ top: 24 }}
       >
         <Alert
           severity={snack.type}
           variant="filled"
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ borderRadius: 3 }}
         >
           {snack.msg}
         </Alert>
