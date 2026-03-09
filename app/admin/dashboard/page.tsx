@@ -324,8 +324,8 @@ function KpiCard({
 
           <Box
             sx={{
-              width: 44,
-              height: 44,
+              width: 50,
+              height: 50,
               borderRadius: "10px",
               display: "grid",
               placeItems: "center",
@@ -510,8 +510,8 @@ export default function AdminDashboardPage() {
                 <Stack direction="row" spacing={1.25} className="items-center">
                   <Box
                     sx={{
-                      width: 34,
-                      height: 34,
+                      width: 40,
+                      height: 40,
                       borderRadius: 2,
                       display: "grid",
                       placeItems: "center",
@@ -826,137 +826,6 @@ export default function AdminDashboardPage() {
                     {formatTHB(car.revenue)}
                   </Typography>
                 </Stack>
-              </Box>
-            ))}
-          </Stack>
-        </SectionCard>
-      </Box>
-
-      {/* latest bookings + activity */}
-      <Box className="grid gap-4 xl:grid-cols-[1.6fr_.9fr]">
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
-          <CardContent className="p-0">
-            <Box className="p-5">
-              <Stack direction="row" className="items-center justify-between">
-                <Box>
-                  <Typography className="text-sm font-bold text-slate-900">
-                    การจองล่าสุด
-                  </Typography>
-                  <Typography className="mt-1 text-xs text-slate-500">
-                    แสดงรายการล่าสุดเพื่อจัดการได้เร็ว
-                  </Typography>
-                </Box>
-
-                <Button
-                  component={Link}
-                  href="/admin/bookings"
-                  size="medium"
-                  variant="outlined"
-                  sx={{
-                    textTransform: "none",
-                    borderColor: "rgb(226 232 240)",
-                    borderRadius: 2,
-                  }}
-                >
-                  ดูทั้งหมด
-                </Button>
-              </Stack>
-            </Box>
-
-            <Divider className="border-slate-200!" />
-
-            <Box className="grid">
-              {BOOKINGS_LATEST.map((b, idx) => (
-                <Box
-                  key={b.id}
-                  sx={{
-                    transition: "background-color .18s ease",
-                    "&:hover": {
-                      backgroundColor: "rgb(248 250 252)",
-                    },
-                  }}
-                >
-                  <Box className="p-4 sm:p-5">
-                    <Stack
-                      direction={{ xs: "column", md: "row" }}
-                      spacing={2}
-                      className="items-start md:items-center justify-between"
-                    >
-                      <Box className="min-w-0">
-                        <Stack direction="row" spacing={1} className="items-center flex-wrap">
-                          <Typography className="text-sm font-bold text-slate-900">
-                            {b.id}
-                          </Typography>
-                          <StatusChip s={b.status} />
-                          <UrgencyChip booking={b} />
-                        </Stack>
-
-                        <Typography className="mt-1 text-sm text-slate-700 truncate">
-                          {b.carName}
-                        </Typography>
-                        <Typography className="mt-1 text-xs text-slate-500">
-                          ผู้จอง: {b.customerName} • รับ: {b.pickupDate} • คืน: {b.returnDate}
-                        </Typography>
-                      </Box>
-
-                      <Stack spacing={1} className="w-full md:w-auto">
-                        <Box className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 md:w-64">
-                          <Typography className="text-xs text-slate-500">ยอดรวม</Typography>
-                          <Typography className="text-sm font-semibold text-slate-900">
-                            {formatTHB(b.totalPrice)}
-                          </Typography>
-                        </Box>
-
-                        <Stack direction="row" spacing={1} className="justify-end">
-                          <Button
-                            size="medium"
-                            variant="outlined"
-                            sx={{
-                              textTransform: "none",
-                              borderColor: "rgb(226 232 240)",
-                              borderRadius: 2,
-                            }}
-                          >
-                            รายละเอียด
-                          </Button>
-                          <Button
-                            size="medium"
-                            variant="contained"
-                            sx={{
-                              textTransform: "none",
-                              bgcolor: "rgb(15 23 42)",
-                              boxShadow: "none",
-                              "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-                              borderRadius: 2,
-                            }}
-                          >
-                            จัดการ
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-                  </Box>
-
-                  {idx !== BOOKINGS_LATEST.length - 1 ? (
-                    <Divider className="border-slate-200!" />
-                  ) : null}
-                </Box>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
-
-        <SectionCard
-          title="กิจกรรมล่าสุดในระบบ"
-          sub="ติดตามความเคลื่อนไหวล่าสุดของทีมและลูกค้า"
-          icon={<ForumRoundedIcon fontSize="medium" />}
-        >
-          <Stack spacing={1.5}>
-            {ACTIVITY_FEED.map((item, idx) => (
-              <Box key={item.id}>
-                <Typography className="text-sm text-slate-800">{item.text}</Typography>
-                <Typography className="mt-1 text-xs text-slate-500">{item.time}</Typography>
-                {idx !== ACTIVITY_FEED.length - 1 ? <Divider sx={{ mt: 1.5 }} /> : null}
               </Box>
             ))}
           </Stack>
