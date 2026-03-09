@@ -65,7 +65,10 @@ type Row = {
 };
 
 function formatTHB(n: number) {
-  return new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(n) + " บาท";
+  return (
+    new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(n) +
+    " บาท"
+  );
 }
 
 function statusLabel(s: Status) {
@@ -182,7 +185,9 @@ function StatusChip({ s }: { s: Status }) {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Box className="grid grid-cols-1 gap-1 sm:grid-cols-[140px_1fr]">
-      <Typography className="text-sm font-medium text-slate-500">{label}</Typography>
+      <Typography className="text-sm font-medium text-slate-500">
+        {label}
+      </Typography>
       <Box className="text-sm font-semibold text-slate-900">{value}</Box>
     </Box>
   );
@@ -197,7 +202,9 @@ function SectionCard({
 }) {
   return (
     <Box className="rounded-2xl border border-slate-200 bg-white p-4">
-      <Typography className="text-sm font-extrabold text-slate-900">{title}</Typography>
+      <Typography className="text-sm font-extrabold text-slate-900">
+        {title}
+      </Typography>
       <Divider className="my-3 border-slate-200!" />
       <Stack spacing={2}>{children}</Stack>
     </Box>
@@ -317,7 +324,8 @@ export default function PaymentVerificationPage() {
           ? {
               ...r,
               status,
-              reviewerNote: reviewerNote !== undefined ? reviewerNote : r.reviewerNote,
+              reviewerNote:
+                reviewerNote !== undefined ? reviewerNote : r.reviewerNote,
             }
           : r
       )
@@ -465,7 +473,10 @@ export default function PaymentVerificationPage() {
     <>
       <Box className="grid gap-4">
         <Box>
-          <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+          <Typography
+            variant="h6"
+            className="text-xl font-extrabold text-slate-900"
+          >
             ตรวจสลิป / ยืนยันชำระ
           </Typography>
           <Typography className="text-sm text-slate-600">
@@ -473,7 +484,10 @@ export default function PaymentVerificationPage() {
           </Typography>
         </Box>
 
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+        <Card
+          elevation={0}
+          className="rounded-2xl! border border-slate-200 bg-white"
+        >
           <CardContent className="p-5">
             <Stack
               direction={{ xs: "column", sm: "row" }}
@@ -487,16 +501,21 @@ export default function PaymentVerificationPage() {
 
                 <Box>
                   <Typography className="text-sm font-bold text-slate-900">
-                    ทั้งหมด {kpi.total} • รอตรวจ {kpi.pending} • ผ่าน {kpi.approved} • ไม่ผ่าน{" "}
-                    {kpi.rejected}
+                    ทั้งหมด {kpi.total} • รอตรวจ {kpi.pending} • ผ่าน{" "}
+                    {kpi.approved} • ไม่ผ่าน {kpi.rejected}
                   </Typography>
                   <Typography className="mt-1 text-xs text-slate-500">
-                    แนะนำ: ตรวจยอด ชื่อผู้โอน เวลาโอน และบัญชีปลายทาง ก่อนกด “อนุมัติ”
+                    แนะนำ: ตรวจยอด ชื่อผู้โอน เวลาโอน และบัญชีปลายทาง ก่อนกด
+                    “อนุมัติ”
                   </Typography>
                 </Box>
               </Stack>
 
-              <Stack direction="row" spacing={1.5} className="items-center flex-wrap">
+              <Stack
+                direction="row"
+                spacing={1.5}
+                className="items-center flex-wrap"
+              >
                 <Stack direction="row" spacing={1} className="items-center">
                   <Typography className="text-xs font-medium text-slate-500">
                     แสดงเฉพาะรอตรวจ
@@ -509,7 +528,9 @@ export default function PaymentVerificationPage() {
                 </Stack>
 
                 <Chip
-                  label={kpi.pending > 0 ? `PENDING ${kpi.pending}` : "ALL CLEAR"}
+                  label={
+                    kpi.pending > 0 ? `PENDING ${kpi.pending}` : "ALL CLEAR"
+                  }
                   variant="outlined"
                   sx={{
                     border: "1px solid rgb(226 232 240)",
@@ -523,7 +544,10 @@ export default function PaymentVerificationPage() {
           </CardContent>
         </Card>
 
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+        <Card
+          elevation={0}
+          className="rounded-2xl! border border-slate-200 bg-white"
+        >
           <CardContent className="p-0">
             <Box className="px-5 py-4 flex items-center justify-between">
               <Typography className="text-sm font-bold text-slate-900">
@@ -538,16 +562,26 @@ export default function PaymentVerificationPage() {
 
             <Box className="divide-y divide-slate-200">
               {filteredRows.map((r) => {
-                const rowAccountCompare = compareAccount(r.expectedAccount, r.slipAccount);
+                const rowAccountCompare = compareAccount(
+                  r.expectedAccount,
+                  r.slipAccount
+                );
                 return (
-                  <Box key={r.id} className="px-5 py-4 hover:bg-slate-50 transition-colors">
+                  <Box
+                    key={r.id}
+                    className="px-5 py-4 hover:bg-slate-50 transition-colors"
+                  >
                     <Stack
                       direction={{ xs: "column", md: "row" }}
                       spacing={2}
                       className="items-start md:items-center justify-between"
                     >
                       <Box className="min-w-0">
-                        <Stack direction="row" spacing={1} className="items-center flex-wrap">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          className="items-center flex-wrap"
+                        >
                           <Typography className="text-sm font-black text-slate-900">
                             {r.bookingId}
                           </Typography>
@@ -597,11 +631,16 @@ export default function PaymentVerificationPage() {
                         </Typography>
 
                         <Typography className="mt-1 text-xs text-slate-500">
-                          อ้างอิง: {r.referenceNo ?? "-"} • เวลาโอน: {r.paidAt ?? "-"}
+                          อ้างอิง: {r.referenceNo ?? "-"} • เวลาโอน:{" "}
+                          {r.paidAt ?? "-"}
                         </Typography>
                       </Box>
 
-                      <Stack direction="row" spacing={1} className="items-center flex-wrap">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        className="items-center flex-wrap"
+                      >
                         <Button
                           size="small"
                           variant="outlined"
@@ -623,7 +662,10 @@ export default function PaymentVerificationPage() {
                             textTransform: "none",
                             bgcolor: "rgb(15 23 42)",
                             boxShadow: "none",
-                            "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
+                            "&:hover": {
+                              bgcolor: "rgb(2 6 23)",
+                              boxShadow: "none",
+                            },
                             borderRadius: 2,
                           }}
                         >
@@ -666,14 +708,26 @@ export default function PaymentVerificationPage() {
         }}
       >
         <Box className="p-4">
-          <Stack direction="row" spacing={1.25} className="items-center justify-between">
-            <Stack direction="row" spacing={1.25} className="items-center min-w-0">
+          <Stack
+            direction="row"
+            spacing={1.25}
+            className="items-center justify-between"
+          >
+            <Stack
+              direction="row"
+              spacing={1.25}
+              className="items-center min-w-0"
+            >
               <Box className="min-w-0">
                 <Typography className="text-sm font-black text-slate-900">
-                  {drawerMode === "detail" ? "รายละเอียดการตรวจสลิป" : "อัปเดตสถานะการตรวจสอบ"}
+                  {drawerMode === "detail"
+                    ? "รายละเอียดการตรวจสลิป"
+                    : "อัปเดตสถานะการตรวจสอบ"}
                 </Typography>
                 <Typography className="text-xs text-slate-500">
-                  {selectedRow ? `${selectedRow.bookingId} • ${selectedRow.customer}` : "-"}
+                  {selectedRow
+                    ? `${selectedRow.bookingId} • ${selectedRow.customer}`
+                    : "-"}
                 </Typography>
               </Box>
             </Stack>
@@ -714,7 +768,9 @@ export default function PaymentVerificationPage() {
                     <Typography className="mt-2 text-sm text-slate-200">
                       ลูกค้า {selectedRow.customer}
                     </Typography>
-                    <Typography className="mt-4 text-sm text-slate-300">ยอดที่โอน</Typography>
+                    <Typography className="mt-4 text-sm text-slate-300">
+                      ยอดที่โอน
+                    </Typography>
                     <Typography className="text-2xl font-extrabold">
                       {formatTHB(selectedRow.paidAmount)}
                     </Typography>
@@ -726,9 +782,18 @@ export default function PaymentVerificationPage() {
                 <SectionCard title="ข้อมูลธุรกรรม">
                   <InfoRow label="Booking ID" value={selectedRow.bookingId} />
                   <InfoRow label="ลูกค้า" value={selectedRow.customer} />
-                  <InfoRow label="ยอดที่ต้องชำระ" value={formatTHB(selectedRow.bookingAmount)} />
-                  <InfoRow label="ยอดที่โอน" value={formatTHB(selectedRow.paidAmount)} />
-                  <InfoRow label="สถานะ" value={<StatusChip s={selectedRow.status} />} />
+                  <InfoRow
+                    label="ยอดที่ต้องชำระ"
+                    value={formatTHB(selectedRow.bookingAmount)}
+                  />
+                  <InfoRow
+                    label="ยอดที่โอน"
+                    value={formatTHB(selectedRow.paidAmount)}
+                  />
+                  <InfoRow
+                    label="สถานะ"
+                    value={<StatusChip s={selectedRow.status} />}
+                  />
                 </SectionCard>
 
                 <SectionCard title="เปรียบเทียบยอด">
@@ -736,9 +801,17 @@ export default function PaymentVerificationPage() {
                     label="ผลตรวจยอด"
                     value={
                       amountMatched ? (
-                        <MatchChip ok={true} okLabel="ยอดตรงกัน" badLabel="ยอดไม่ตรง" />
+                        <MatchChip
+                          ok={true}
+                          okLabel="ยอดตรงกัน"
+                          badLabel="ยอดไม่ตรง"
+                        />
                       ) : (
-                        <MatchChip ok={false} okLabel="ยอดตรงกัน" badLabel={`ต่าง ${formatTHB(Math.abs(amountDelta))}`} />
+                        <MatchChip
+                          ok={false}
+                          okLabel="ยอดตรงกัน"
+                          badLabel={`ต่าง ${formatTHB(Math.abs(amountDelta))}`}
+                        />
                       )
                     }
                   />
@@ -755,21 +828,48 @@ export default function PaymentVerificationPage() {
                 </SectionCard>
 
                 <SectionCard title="บัญชีที่ระบบคาดหวัง">
-                  <InfoRow label="ธนาคาร" value={selectedRow.expectedAccount.bankName} />
-                  <InfoRow label="ชื่อบัญชี" value={selectedRow.expectedAccount.accountName} />
-                  <InfoRow label="เลขบัญชี" value={selectedRow.expectedAccount.accountNo} />
+                  <InfoRow
+                    label="ธนาคาร"
+                    value={selectedRow.expectedAccount.bankName}
+                  />
+                  <InfoRow
+                    label="ชื่อบัญชี"
+                    value={selectedRow.expectedAccount.accountName}
+                  />
+                  <InfoRow
+                    label="เลขบัญชี"
+                    value={selectedRow.expectedAccount.accountNo}
+                  />
                 </SectionCard>
 
                 <SectionCard title="ข้อมูลบัญชีจากสลิป">
-                  <InfoRow label="ธนาคารปลายทาง" value={selectedRow.slipAccount?.bankName ?? "-"} />
-                  <InfoRow label="ชื่อบัญชีปลายทาง" value={selectedRow.slipAccount?.accountName ?? "-"} />
-                  <InfoRow label="เลขบัญชีปลายทาง" value={selectedRow.slipAccount?.accountNo ?? "-"} />
+                  <InfoRow
+                    label="ธนาคารปลายทาง"
+                    value={selectedRow.slipAccount?.bankName ?? "-"}
+                  />
+                  <InfoRow
+                    label="ชื่อบัญชีปลายทาง"
+                    value={selectedRow.slipAccount?.accountName ?? "-"}
+                  />
+                  <InfoRow
+                    label="เลขบัญชีปลายทาง"
+                    value={selectedRow.slipAccount?.accountNo ?? "-"}
+                  />
 
                   <Divider className="border-slate-200!" />
 
-                  <InfoRow label="ธนาคาร" value={<MatchChip ok={accountCompare.bankMatched} />} />
-                  <InfoRow label="ชื่อบัญชี" value={<MatchChip ok={accountCompare.accountNameMatched} />} />
-                  <InfoRow label="เลขบัญชี" value={<MatchChip ok={accountCompare.accountNoMatched} />} />
+                  <InfoRow
+                    label="ธนาคาร"
+                    value={<MatchChip ok={accountCompare.bankMatched} />}
+                  />
+                  <InfoRow
+                    label="ชื่อบัญชี"
+                    value={<MatchChip ok={accountCompare.accountNameMatched} />}
+                  />
+                  <InfoRow
+                    label="เลขบัญชี"
+                    value={<MatchChip ok={accountCompare.accountNoMatched} />}
+                  />
                   <InfoRow
                     label="สรุป"
                     value={
@@ -783,14 +883,22 @@ export default function PaymentVerificationPage() {
                 </SectionCard>
 
                 <SectionCard title="ข้อมูลอ้างอิง">
-                  <InfoRow label="เลขอ้างอิง" value={selectedRow.referenceNo ?? "-"} />
+                  <InfoRow
+                    label="เลขอ้างอิง"
+                    value={selectedRow.referenceNo ?? "-"}
+                  />
                   <InfoRow label="เวลาโอน" value={selectedRow.paidAt ?? "-"} />
-                  <InfoRow label="ธนาคารต้นทาง" value={selectedRow.bankName ?? "-"} />
+                  <InfoRow
+                    label="ธนาคารต้นทาง"
+                    value={selectedRow.bankName ?? "-"}
+                  />
                 </SectionCard>
 
                 <SectionCard title="หมายเหตุ">
                   <Typography className="text-sm leading-6 text-slate-700">
-                    {selectedRow.note?.trim() ? selectedRow.note : "ยังไม่มีหมายเหตุเพิ่มเติม"}
+                    {selectedRow.note?.trim()
+                      ? selectedRow.note
+                      : "ยังไม่มีหมายเหตุเพิ่มเติม"}
                   </Typography>
 
                   <Divider className="border-slate-200!" />
@@ -841,14 +949,20 @@ export default function PaymentVerificationPage() {
                     <Box className="grid min-h-45 place-items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-slate-400">
                       <Stack spacing={1} className="items-center">
                         <ImageRoundedIcon />
-                        <Typography className="text-sm">ยังไม่มีรูปสลิป</Typography>
+                        <Typography className="text-sm">
+                          ยังไม่มีรูปสลิป
+                        </Typography>
                       </Stack>
                     </Box>
                   )}
                 </SectionCard>
               </Box>
 
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="pt-0.5">
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1}
+                className="pt-0.5"
+              >
                 <Button
                   fullWidth
                   size="medium"
@@ -930,12 +1044,18 @@ export default function PaymentVerificationPage() {
                   </Typography>
 
                   <Stack direction="row" spacing={1} className="items-center">
-                    <Typography className="text-xs text-slate-500">จะบันทึกเป็น</Typography>
+                    <Typography className="text-xs text-slate-500">
+                      จะบันทึกเป็น
+                    </Typography>
                     <StatusChip s={nextStatus} />
                   </Stack>
                 </Stack>
 
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} className="mt-4">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={1.2}
+                  className="mt-4"
+                >
                   {quickActions.map((action) => {
                     const isActive = nextStatus === action.status;
 
@@ -976,8 +1096,14 @@ export default function PaymentVerificationPage() {
                       <Typography className="text-xs font-medium text-slate-500">
                         เปรียบเทียบก่อนบันทึก
                       </Typography>
-                      <InfoRow label="ยอดที่ต้องชำระ" value={formatTHB(selectedRow.bookingAmount)} />
-                      <InfoRow label="ยอดที่โอน" value={formatTHB(selectedRow.paidAmount)} />
+                      <InfoRow
+                        label="ยอดที่ต้องชำระ"
+                        value={formatTHB(selectedRow.bookingAmount)}
+                      />
+                      <InfoRow
+                        label="ยอดที่โอน"
+                        value={formatTHB(selectedRow.paidAmount)}
+                      />
                       <InfoRow
                         label="ผลตรวจยอด"
                         value={
@@ -1092,7 +1218,8 @@ export default function PaymentVerificationPage() {
         open={snack.open}
         autoHideDuration={2500}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{ top: 24 }}
       >
         <Alert
           severity={snack.type}
