@@ -32,10 +32,7 @@ import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import CallRoundedIcon from "@mui/icons-material/CallRounded";
 import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import HourglassTopRoundedIcon from "@mui/icons-material/HourglassTopRounded";
-import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import MarkEmailReadRoundedIcon from "@mui/icons-material/MarkEmailReadRounded";
 import AssignmentIndRoundedIcon from "@mui/icons-material/AssignmentIndRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
@@ -43,6 +40,7 @@ import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 type TicketStatus = "new" | "open" | "waiting" | "resolved" | "closed";
 type Priority = "low" | "normal" | "high" | "urgent";
@@ -254,30 +252,34 @@ function priorityLabel(p: Priority) {
 }
 
 function statusChipSX(s: TicketStatus) {
-  if (s === "new")
+  if (s === "new") {
     return {
       border: "1px solid rgb(253 230 138)",
       bgcolor: "rgb(254 243 199)",
       color: "rgb(146 64 14)",
     };
-  if (s === "open")
+  }
+  if (s === "open") {
     return {
       border: "1px solid rgb(186 230 253)",
       bgcolor: "rgb(224 242 254)",
       color: "rgb(3 105 161)",
     };
-  if (s === "waiting")
+  }
+  if (s === "waiting") {
     return {
       border: "1px solid rgb(196 181 253)",
       bgcolor: "rgb(237 233 254)",
       color: "rgb(91 33 182)",
     };
-  if (s === "resolved")
+  }
+  if (s === "resolved") {
     return {
       border: "1px solid rgb(167 243 208)",
       bgcolor: "rgb(209 250 229)",
       color: "rgb(6 95 70)",
     };
+  }
   return {
     border: "1px solid rgb(226 232 240)",
     bgcolor: "rgb(248 250 252)",
@@ -286,24 +288,27 @@ function statusChipSX(s: TicketStatus) {
 }
 
 function priorityChipSX(p: Priority) {
-  if (p === "urgent")
+  if (p === "urgent") {
     return {
       border: "1px solid rgb(254 202 202)",
       bgcolor: "rgb(254 226 226)",
       color: "rgb(153 27 27)",
     };
-  if (p === "high")
+  }
+  if (p === "high") {
     return {
       border: "1px solid rgb(253 230 138)",
       bgcolor: "rgb(254 243 199)",
       color: "rgb(146 64 14)",
     };
-  if (p === "normal")
+  }
+  if (p === "normal") {
     return {
       border: "1px solid rgb(226 232 240)",
       bgcolor: "rgb(248 250 252)",
       color: "rgb(51 65 85)",
     };
+  }
   return {
     border: "1px solid rgb(226 232 240)",
     bgcolor: "rgb(255 255 255)",
@@ -321,10 +326,12 @@ function dueBadge(dueAt?: string | null) {
   const startTomorrow = new Date(startToday);
   startTomorrow.setDate(startTomorrow.getDate() + 1);
 
-  if (due.getTime() < now.getTime())
+  if (due.getTime() < now.getTime()) {
     return { label: "เกินกำหนด", tone: "rose" as const };
-  if (due >= startToday && due < startTomorrow)
+  }
+  if (due >= startToday && due < startTomorrow) {
     return { label: "ติดตามวันนี้", tone: "amber" as const };
+  }
   return { label: "มีนัดติดตาม", tone: "slate" as const };
 }
 
@@ -333,19 +340,42 @@ function toTelHref(phone?: string) {
   return `tel:${phone.replace(/\s+/g, "")}`;
 }
 
-// demo-only link
 function toChatHref(channel: Channel, t: Ticket) {
   const msg = encodeURIComponent(
-    `Ticket ${t.id}\nชื่อ: ${t.customerName}\nโทร: ${t.phone ?? "-"}\nเรื่อง: ${
-      t.subject
-    }\nสถานะ: ${statusLabel(t.status)}\nรายละเอียดล่าสุด: ${t.lastMessage}`
+    `Ticket ${t.id}\nชื่อ: ${t.customerName}\nโทร: ${t.phone ?? "-"}\nเรื่อง: ${t.subject}\nสถานะ: ${statusLabel(t.status)}\nรายละเอียดล่าสุด: ${t.lastMessage}`
   );
+
   if (channel === "line") return `https://line.me/R/msg/text/?${msg}`;
   if (channel === "whatsapp") {
     const p = (t.phone ?? "").replace(/\D/g, "");
     return `https://wa.me/${p}?text=${msg}`;
   }
   return `https://www.facebook.com/messages/`;
+}
+
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <Box className="grid grid-cols-1 gap-1 sm:grid-cols-[120px_1fr]">
+      <Typography className="text-sm font-medium text-slate-500">{label}</Typography>
+      <Box className="text-sm font-semibold text-slate-900">{value}</Box>
+    </Box>
+  );
+}
+
+function SectionCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Box className="rounded-2xl border border-slate-200 bg-white p-4">
+      <Typography className="text-sm font-bold text-slate-900">{title}</Typography>
+      <Divider className="my-3 border-slate-200!" />
+      <Stack spacing={2}>{children}</Stack>
+    </Box>
+  );
 }
 
 export default function AdminSupportPageRealMock() {
@@ -358,14 +388,10 @@ export default function AdminSupportPageRealMock() {
   const [status, setStatus] = React.useState<TicketStatus | "all">("all");
   const [channel, setChannel] = React.useState<Channel | "all">("all");
   const [priority, setPriority] = React.useState<Priority | "all">("all");
-  const [owner, setOwner] =
-    React.useState<(typeof ADMINS)[number]>("Unassigned");
+  const [owner, setOwner] = React.useState<(typeof ADMINS)[number]>("Unassigned");
 
   const [openId, setOpenId] = React.useState<string | null>(null);
-  const selected = React.useMemo(
-    () => rows.find((r) => r.id === openId) ?? null,
-    [rows, openId]
-  );
+  const selected = React.useMemo(() => rows.find((r) => r.id === openId) ?? null, [rows, openId]);
 
   const [reply, setReply] = React.useState("");
   const [note, setNote] = React.useState("");
@@ -493,9 +519,11 @@ export default function AdminSupportPageRealMock() {
       setSnack({ open: true, msg: "พิมพ์โน้ตก่อนบันทึก", type: "info" });
       return;
     }
+
     updateTicket(selected.id, {
       internalNotes: [text, ...selected.internalNotes],
     });
+
     setNote("");
     setSnack({ open: true, msg: "บันทึกโน้ตภายในแล้ว", type: "success" });
   }
@@ -508,12 +536,8 @@ export default function AdminSupportPageRealMock() {
 
   return (
     <Box className="grid gap-4">
-      {/* Header (เหมือน Support) */}
       <Box>
-        <Typography
-          variant="h6"
-          className="text-xl font-extrabold text-slate-900"
-        >
+        <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
           ซัพพอร์ต
         </Typography>
         <Typography className="text-sm text-slate-600">
@@ -521,11 +545,7 @@ export default function AdminSupportPageRealMock() {
         </Typography>
       </Box>
 
-      {/* Summary Card (เหมือน Support) */}
-      <Card
-        elevation={0}
-        className="rounded-2xl! border border-slate-200 bg-white"
-      >
+      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
         <CardContent className="p-5">
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -538,37 +558,18 @@ export default function AdminSupportPageRealMock() {
               </Box>
               <Box>
                 <Typography className="text-sm font-bold text-slate-900">
-                  ทั้งหมด {kpi.total} • ใหม่ {kpi.newCount} • กำลังทำ{" "}
-                  {kpi.openCount} • รอตอบ {kpi.waiting} • ปิดงาน {kpi.resolved}
+                  ทั้งหมด {kpi.total} • ใหม่ {kpi.newCount} • กำลังทำ {kpi.openCount} • รอตอบ {kpi.waiting} • ปิดงาน {kpi.resolved}
                   {kpi.overdue ? ` • เกินกำหนด ${kpi.overdue}` : ""}
                 </Typography>
                 <Typography className="mt-1 text-xs text-slate-500">
-                  โหมดจำลอง: ยังไม่ต่อ LINE/FB จริง — ใช้ทดสอบ UX/Flow ก่อนต่อ
-                  API
+                  โหมดจำลอง: ยังไม่ต่อ LINE/FB จริง — ใช้ทดสอบ UX/Flow ก่อนต่อ API
                 </Typography>
               </Box>
             </Stack>
-
-            <Button
-              component={Link}
-              href="/admin/settings"
-              variant="contained"
-              size="small"
-              sx={{
-                textTransform: "none",
-                bgcolor: "rgb(15 23 42)",
-                boxShadow: "none",
-                "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-                borderRadius: 2,
-              }}
-            >
-              ไปตั้งค่า
-            </Button>
           </Stack>
         </CardContent>
       </Card>
 
-      {/* KPI */}
       <Box className="grid gap-4 sm:grid-cols-6">
         {[
           { label: "ทั้งหมด", value: kpi.total, tone: "slate" as const },
@@ -635,11 +636,7 @@ export default function AdminSupportPageRealMock() {
         ))}
       </Box>
 
-      {/* Filters */}
-      <Card
-        elevation={0}
-        className="rounded-2xl! border border-slate-200 bg-white"
-      >
+      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
         <CardContent className="p-5">
           <Stack
             direction={{ xs: "column", lg: "row" }}
@@ -666,7 +663,7 @@ export default function AdminSupportPageRealMock() {
               select
               label="สถานะ"
               value={status}
-              onChange={(e) => setStatus(e.target.value as any)}
+              onChange={(e) => setStatus(e.target.value as TicketStatus | "all")}
               size="small"
               sx={roundedFieldSX}
               className="min-w-44"
@@ -690,7 +687,7 @@ export default function AdminSupportPageRealMock() {
               select
               label="ช่องทาง"
               value={channel}
-              onChange={(e) => setChannel(e.target.value as any)}
+              onChange={(e) => setChannel(e.target.value as Channel | "all")}
               size="small"
               sx={roundedFieldSX}
               className="min-w-44"
@@ -707,7 +704,7 @@ export default function AdminSupportPageRealMock() {
               select
               label="Priority"
               value={priority}
-              onChange={(e) => setPriority(e.target.value as any)}
+              onChange={(e) => setPriority(e.target.value as Priority | "all")}
               size="small"
               sx={roundedFieldSX}
               className="min-w-44"
@@ -723,7 +720,7 @@ export default function AdminSupportPageRealMock() {
               select
               label="Owner"
               value={owner}
-              onChange={(e) => setOwner(e.target.value as any)}
+              onChange={(e) => setOwner(e.target.value as (typeof ADMINS)[number])}
               size="small"
               sx={roundedFieldSX}
               className="min-w-44"
@@ -738,19 +735,11 @@ export default function AdminSupportPageRealMock() {
         </CardContent>
       </Card>
 
-      {/* Inbox */}
-      <Card
-        elevation={0}
-        className="rounded-2xl! border border-slate-200 bg-white"
-      >
+      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
         <CardContent className="p-0">
           <Box className="px-5 py-4 flex items-center justify-between">
-            <Typography className="text-sm font-bold text-slate-900">
-              Inbox
-            </Typography>
-            <Typography className="text-xs text-slate-500">
-              {filtered.length} รายการ
-            </Typography>
+            <Typography className="text-sm font-bold text-slate-900">Inbox</Typography>
+            <Typography className="text-xs text-slate-500">{filtered.length} รายการ</Typography>
           </Box>
 
           <Divider className="border-slate-200!" />
@@ -758,22 +747,16 @@ export default function AdminSupportPageRealMock() {
           <Box className="divide-y divide-slate-200">
             {filtered.map((t) => {
               const due = dueBadge(t.dueAt);
+
               return (
-                <Box
-                  key={t.id}
-                  className="px-5 py-4 hover:bg-slate-50 transition-colors"
-                >
+                <Box key={t.id} className="px-5 py-4 hover:bg-slate-50 transition-colors">
                   <Stack
                     direction={{ xs: "column", lg: "row" }}
                     spacing={2}
                     className="items-start lg:items-center justify-between"
                   >
                     <Box className="min-w-0">
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        className="items-center flex-wrap"
-                      >
+                      <Stack direction="row" spacing={1} className="items-center flex-wrap">
                         <Typography className="text-sm font-black text-slate-900">
                           {t.id}
                         </Typography>
@@ -802,28 +785,13 @@ export default function AdminSupportPageRealMock() {
                           }}
                         />
 
-                        <Chip
-                          size="small"
-                          label={channelLabel(t.channel)}
-                          variant="outlined"
-                        />
-                        <Chip
-                          size="small"
-                          label={branchLabel(t.branch)}
-                          variant="outlined"
-                        />
+                        <Chip size="small" label={channelLabel(t.channel)} variant="outlined" />
+                        <Chip size="small" label={branchLabel(t.branch)} variant="outlined" />
+
                         {t.owner ? (
-                          <Chip
-                            size="small"
-                            label={`Owner: ${t.owner}`}
-                            variant="outlined"
-                          />
+                          <Chip size="small" label={`Owner: ${t.owner}`} variant="outlined" />
                         ) : (
-                          <Chip
-                            size="small"
-                            label="Unassigned"
-                            variant="outlined"
-                          />
+                          <Chip size="small" label="Unassigned" variant="outlined" />
                         )}
 
                         {t.bookingId ? (
@@ -867,15 +835,13 @@ export default function AdminSupportPageRealMock() {
                         ) : null}
                       </Stack>
 
-                      <Typography className="mt-1 text-sm text-slate-800 font-semibold line-clamp-1">
+                      <Typography className="mt-1 text-sm font-semibold text-slate-800 line-clamp-1">
                         {t.subject}
                       </Typography>
 
                       <Typography className="mt-1 text-sm text-slate-700">
                         {t.customerName} {t.phone ? `• ${t.phone}` : ""} •{" "}
-                        <span className="text-slate-500">
-                          {formatDateTimeTH(t.updatedAt)}
-                        </span>
+                        <span className="text-slate-500">{formatDateTimeTH(t.updatedAt)}</span>
                       </Typography>
 
                       <Typography className="mt-1 text-xs text-slate-500 line-clamp-2">
@@ -883,11 +849,7 @@ export default function AdminSupportPageRealMock() {
                       </Typography>
 
                       {t.tags.length ? (
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          className="items-center flex-wrap mt-2"
-                        >
+                        <Stack direction="row" spacing={1} className="items-center flex-wrap mt-2">
                           {t.tags.slice(0, 4).map((tag) => (
                             <Chip
                               key={tag}
@@ -898,28 +860,16 @@ export default function AdminSupportPageRealMock() {
                             />
                           ))}
                           {t.tags.length > 4 ? (
-                            <Chip
-                              size="small"
-                              label={`+${t.tags.length - 4}`}
-                              variant="outlined"
-                            />
+                            <Chip size="small" label={`+${t.tags.length - 4}`} variant="outlined" />
                           ) : null}
                         </Stack>
                       ) : null}
                     </Box>
 
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      className="items-center flex-wrap"
-                    >
+                    <Stack direction="row" spacing={1} className="items-center flex-wrap">
                       <Tooltip title="โทร">
                         <span>
-                          <IconButton
-                            component="a"
-                            href={toTelHref(t.phone)}
-                            disabled={!t.phone}
-                          >
+                          <IconButton component="a" href={toTelHref(t.phone)} disabled={!t.phone}>
                             <CallRoundedIcon />
                           </IconButton>
                         </span>
@@ -974,25 +924,19 @@ export default function AdminSupportPageRealMock() {
         </CardContent>
       </Card>
 
-      {/* Drawer */}
       <Drawer
         anchor={isMobile ? "bottom" : "right"}
         open={!!openId}
         onClose={() => setOpenId(null)}
         PaperProps={{
           sx: {
-            width: isMobile ? "100%" : 700,
-            height: isMobile ? "80%" : "100%",
+            width: isMobile ? "100%" : 760,
+            height: isMobile ? "84%" : "100%",
           },
         }}
       >
         <Box className="p-4">
-          {/* Header */}
-          <Stack
-            direction="row"
-            spacing={1.25}
-            className="items-center justify-between"
-          >
+          <Stack direction="row" spacing={1.25} className="items-center justify-between">
             <Stack direction="row" spacing={1.25} className="items-center">
               <Avatar
                 sx={{
@@ -1030,363 +974,383 @@ export default function AdminSupportPageRealMock() {
                   }}
                 />
               ) : null}
+
+              <IconButton onClick={() => setOpenId(null)}>
+                <CloseRoundedIcon />
+              </IconButton>
             </Stack>
           </Stack>
 
           <Divider className="my-4! border-slate-200!" />
 
-          {/* Quick fields */}
-          <Stack spacing={1.5}>
-            <Typography className="text-xs text-slate-500">
-              จัดการ Ticket
-            </Typography>
+          {selected ? (
+            <Stack spacing={2}>
+              <Box className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <Box
+                  className="relative bg-linear-to-br from-slate-900 to-slate-700"
+                  sx={{ minHeight: 220 }}
+                >
+                  <Box className="grid h-55 w-full place-items-center text-slate-300">
+                    <SupportAgentRoundedIcon sx={{ fontSize: 56 }} />
+                  </Box>
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
-              <TextField
-                select
-                label="สถานะ"
-                size="small"
-                value={selected?.status ?? "new"}
-                onChange={(e) =>
-                  selected &&
-                  updateTicket(selected.id, {
-                    status: e.target.value as TicketStatus,
-                  })
-                }
-                sx={{ flex: 1, ...roundedFieldSX }}
-                InputProps={{
-                  startAdornment: (
-                    <Box className="mr-2 text-slate-500">
-                      <HourglassTopRoundedIcon fontSize="small" />
-                    </Box>
-                  ),
-                }}
-                disabled={!selected}
-              >
-                <MenuItem value="new">ใหม่</MenuItem>
-                <MenuItem value="open">กำลังดำเนินการ</MenuItem>
-                <MenuItem value="waiting">รอลูกค้าตอบ</MenuItem>
-                <MenuItem value="resolved">ปิดงานแล้ว</MenuItem>
-                <MenuItem value="closed">ปิดถาวร</MenuItem>
-              </TextField>
+                  <Box
+                    className="absolute inset-0"
+                    sx={{
+                      background:
+                        "linear-gradient(to bottom, rgba(15,23,42,0.82), rgba(15,23,42,0.18))",
+                    }}
+                  />
 
-              <TextField
-                select
-                label="Owner"
-                size="small"
-                value={selected?.owner ?? "Unassigned"}
-                onChange={(e) =>
-                  selected &&
-                  updateTicket(selected.id, {
-                    owner:
-                      e.target.value === "Unassigned"
-                        ? null
-                        : (e.target.value as string),
-                  })
-                }
-                sx={{ flex: 1, ...roundedFieldSX }}
-                InputProps={{
-                  startAdornment: (
-                    <Box className="mr-2 text-slate-500">
-                      <AssignmentIndRoundedIcon fontSize="small" />
-                    </Box>
-                  ),
-                }}
-                disabled={!selected}
-              >
-                {ADMINS.map((a) => (
-                  <MenuItem key={a} value={a}>
-                    {a}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Stack>
+                  <Box className="absolute inset-x-0 top-0 p-4 text-white">
+                    <Typography className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+                      Ticket Overview
+                    </Typography>
+                    <Typography className="mt-2 text-xl font-extrabold">
+                      {selected.subject}
+                    </Typography>
+                    <Typography className="mt-2 text-sm text-slate-200">
+                      {channelLabel(selected.channel)} • {branchLabel(selected.branch)}
+                    </Typography>
+                    <Typography className="mt-4 text-sm text-slate-300">อัปเดตล่าสุด</Typography>
+                    <Typography className="text-lg font-extrabold">
+                      {formatDateTimeTH(selected.updatedAt)}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
-              <TextField
-                select
-                label="Priority"
-                size="small"
-                value={selected?.priority ?? "normal"}
-                onChange={(e) =>
-                  selected &&
-                  updateTicket(selected.id, {
-                    priority: e.target.value as Priority,
-                  })
-                }
-                sx={{ flex: 1, ...roundedFieldSX }}
-                InputProps={{
-                  startAdornment: (
-                    <Box className="mr-2 text-slate-500">
-                      <LocalOfferRoundedIcon fontSize="small" />
-                    </Box>
-                  ),
-                }}
-                disabled={!selected}
-              >
-                <MenuItem value="urgent">ด่วนมาก</MenuItem>
-                <MenuItem value="high">ด่วน</MenuItem>
-                <MenuItem value="normal">ปกติ</MenuItem>
-                <MenuItem value="low">ต่ำ</MenuItem>
-              </TextField>
+              <SectionCard title="จัดการ Ticket">
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
+                  <TextField
+                    select
+                    label="สถานะ"
+                    size="small"
+                    value={selected.status}
+                    onChange={(e) =>
+                      updateTicket(selected.id, {
+                        status: e.target.value as TicketStatus,
+                      })
+                    }
+                    sx={{ flex: 1, ...roundedFieldSX }}
+                    InputProps={{
+                      startAdornment: (
+                        <Box className="mr-2 text-slate-500">
+                          <HourglassTopRoundedIcon fontSize="small" />
+                        </Box>
+                      ),
+                    }}
+                  >
+                    <MenuItem value="new">ใหม่</MenuItem>
+                    <MenuItem value="open">กำลังดำเนินการ</MenuItem>
+                    <MenuItem value="waiting">รอลูกค้าตอบ</MenuItem>
+                    <MenuItem value="resolved">ปิดงานแล้ว</MenuItem>
+                    <MenuItem value="closed">ปิดถาวร</MenuItem>
+                  </TextField>
 
-              <Button
-                size="small"
-                variant="outlined"
-                startIcon={<ContentCopyRoundedIcon />}
-                onClick={() => selected && copySummary(selected)}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  borderColor: "rgb(226 232 240)",
-                }}
-                disabled={!selected}
-              >
-                คัดลอกสรุป
-              </Button>
+                  <TextField
+                    select
+                    label="Owner"
+                    size="small"
+                    value={selected.owner ?? "Unassigned"}
+                    onChange={(e) =>
+                      updateTicket(selected.id, {
+                        owner: e.target.value === "Unassigned" ? null : (e.target.value as string),
+                      })
+                    }
+                    sx={{ flex: 1, ...roundedFieldSX }}
+                    InputProps={{
+                      startAdornment: (
+                        <Box className="mr-2 text-slate-500">
+                          <AssignmentIndRoundedIcon fontSize="small" />
+                        </Box>
+                      ),
+                    }}
+                  >
+                    {ADMINS.map((a) => (
+                      <MenuItem key={a} value={a}>
+                        {a}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Stack>
 
-              {selected?.bookingId ? (
-                <Button
-                  component={Link}
-                  href={`/admin/bookings/${selected.bookingId}`}
+                <TextField
+                  select
+                  label="Priority"
                   size="small"
-                  variant="outlined"
-                  endIcon={<OpenInNewRoundedIcon />}
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: 2,
-                    borderColor: "rgb(226 232 240)",
+                  value={selected.priority}
+                  onChange={(e) =>
+                    updateTicket(selected.id, {
+                      priority: e.target.value as Priority,
+                    })
+                  }
+                  sx={{ ...roundedFieldSX }}
+                  InputProps={{
+                    startAdornment: (
+                      <Box className="mr-2 text-slate-500">
+                        <LocalOfferRoundedIcon fontSize="small" />
+                      </Box>
+                    ),
                   }}
                 >
-                  เปิด Booking
-                </Button>
-              ) : null}
-            </Stack>
-          </Stack>
+                  <MenuItem value="urgent">ด่วนมาก</MenuItem>
+                  <MenuItem value="high">ด่วน</MenuItem>
+                  <MenuItem value="normal">ปกติ</MenuItem>
+                  <MenuItem value="low">ต่ำ</MenuItem>
+                </TextField>
 
-          <Divider className="my-4! border-slate-200!" />
-
-          {/* Conversation */}
-          <Box>
-            <Typography className="text-xs text-slate-500">บทสนทนา</Typography>
-
-            <Box className="mt-3 grid gap-2">
-              {(selected?.messages ?? []).map((m) => (
-                <Box
-                  key={m.id}
-                  className={[
-                    "rounded-2xl border p-3",
-                    m.from === "customer"
-                      ? "border-slate-200 bg-white"
-                      : m.from === "agent"
-                      ? "border-slate-200 bg-slate-50"
-                      : "border-slate-200 bg-slate-100",
-                  ].join(" ")}
-                >
-                  <Stack
-                    direction="row"
-                    className="items-center justify-between"
-                  >
-                    <Typography className="text-xs font-semibold text-slate-700">
-                      {m.from === "customer"
-                        ? "ลูกค้า"
-                        : m.from === "agent"
-                        ? "แอดมิน"
-                        : "ระบบ"}
-                    </Typography>
-                    <Typography className="text-[11px] text-slate-500">
-                      {formatDateTimeTH(m.at)}
-                    </Typography>
-                  </Stack>
-
-                  <Typography className="mt-1 text-sm text-slate-900 whitespace-pre-line">
-                    {m.text}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-
-            {/* Reply box */}
-            <Card
-              elevation={0}
-              className="mt-4 rounded-2xl! border border-slate-200 bg-white"
-            >
-              <CardContent className="p-4">
-                <Stack spacing={1.25}>
-                  <TextField
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                    placeholder="พิมพ์ข้อความตอบลูกค้า..."
-                    multiline
-                    minRows={3}
+                <Stack direction="row" spacing={1} className="flex-wrap">
+                  <Button
                     size="small"
-                    sx={roundedFieldSX}
-                    disabled={!selected}
-                  />
-
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    className="items-center justify-between"
+                    variant="outlined"
+                    startIcon={<ContentCopyRoundedIcon />}
+                    onClick={() => copySummary(selected)}
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: 2,
+                      borderColor: "rgb(226 232 240)",
+                    }}
                   >
-                    <Typography className="text-[11px] text-slate-500 flex items-center gap-1">
-                      <SendRoundedIcon fontSize="inherit" />
-                      ส่งแบบจำลอง (ยังไม่ต่อ API จริง)
-                    </Typography>
+                    คัดลอกสรุป
+                  </Button>
 
+                  {selected.bookingId ? (
                     <Button
-                      onClick={sendReply}
-                      variant="contained"
+                      component={Link}
+                      href={`/admin/bookings/${selected.bookingId}`}
                       size="small"
-                      endIcon={<SendRoundedIcon />}
-                      sx={{
-                        textTransform: "none",
-                        bgcolor: "rgb(15 23 42)",
-                        boxShadow: "none",
-                        "&:hover": {
-                          bgcolor: "rgb(2 6 23)",
-                          boxShadow: "none",
-                        },
-                        borderRadius: 2,
-                      }}
-                      disabled={!selected}
-                    >
-                      ส่งข้อความ
-                    </Button>
-                  </Stack>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-
-          <Divider className="my-4! border-slate-200!" />
-
-          {/* Internal notes */}
-          <Box>
-            <Typography className="text-xs text-slate-500">
-              โน้ตภายใน (Internal)
-            </Typography>
-
-            <Card
-              elevation={0}
-              className="mt-3 rounded-2xl! border border-slate-200 bg-white"
-            >
-              <CardContent className="p-4">
-                <Stack spacing={1.25}>
-                  <TextField
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="เขียนโน้ตภายใน (ไม่ส่งให้ลูกค้า)..."
-                    multiline
-                    minRows={2}
-                    size="small"
-                    sx={roundedFieldSX}
-                    disabled={!selected}
-                  />
-
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    className="items-center justify-between"
-                  >
-                    <Typography className="text-[11px] text-slate-500 flex items-center gap-1">
-                      <NotesRoundedIcon fontSize="inherit" />
-                      ใช้เพื่อสรุปเคส / สิ่งที่ต้องทำต่อ
-                    </Typography>
-
-                    <Button
-                      onClick={addInternalNote}
                       variant="outlined"
-                      size="small"
+                      endIcon={<OpenInNewRoundedIcon />}
                       sx={{
                         textTransform: "none",
                         borderRadius: 2,
                         borderColor: "rgb(226 232 240)",
                       }}
-                      disabled={!selected}
                     >
-                      บันทึกโน้ต
+                      เปิด Booking
                     </Button>
-                  </Stack>
-
-                  {(selected?.internalNotes?.length ?? 0) > 0 ? (
-                    <Box className="mt-2 grid gap-2">
-                      {selected!.internalNotes.slice(0, 6).map((n, i) => (
-                        <Box
-                          key={i}
-                          className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
-                        >
-                          <Typography className="text-sm text-slate-900 whitespace-pre-line">
-                            {n}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography className="text-xs text-slate-500">
-                      ยังไม่มีโน้ตภายใน
-                    </Typography>
-                  )}
+                  ) : null}
                 </Stack>
-              </CardContent>
-            </Card>
-          </Box>
+              </SectionCard>
 
-          <Divider className="my-4! border-slate-200!" />
+              <Box className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <SectionCard title="ข้อมูลลูกค้า">
+                  <InfoRow label="ชื่อ" value={selected.customerName} />
+                  <InfoRow label="เบอร์โทร" value={selected.phone ?? "-"} />
+                  <InfoRow label="ช่องทาง" value={channelLabel(selected.channel)} />
+                  <InfoRow label="สาขา" value={branchLabel(selected.branch)} />
+                </SectionCard>
 
-          {/* Bottom actions */}
-          <Stack spacing={1}>
-            <Button
-              component="a"
-              href={selected ? toChatHref(selected.channel, selected) : "#"}
-              target="_blank"
-              rel="noreferrer"
-              variant="contained"
-              startIcon={<ChatRoundedIcon />}
-              sx={{
-                textTransform: "none",
-                bgcolor: "rgb(15 23 42)",
-                boxShadow: "none",
-                "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
-                borderRadius: 2.5,
-              }}
-              disabled={!selected}
-            >
-              เปิดแชทภายนอก (จำลอง)
-            </Button>
+                <SectionCard title="ข้อมูล Ticket">
+                  <InfoRow
+                    label="สถานะ"
+                    value={
+                      <Chip
+                        size="small"
+                        label={statusLabel(selected.status)}
+                        variant="outlined"
+                        sx={statusChipSX(selected.status)}
+                      />
+                    }
+                  />
+                  <InfoRow
+                    label="Priority"
+                    value={
+                      <Chip
+                        size="small"
+                        label={priorityLabel(selected.priority)}
+                        variant="outlined"
+                        sx={priorityChipSX(selected.priority)}
+                      />
+                    }
+                  />
+                  <InfoRow label="Owner" value={selected.owner ?? "Unassigned"} />
+                  <InfoRow label="Booking" value={selected.bookingId ?? "-"} />
+                </SectionCard>
+              </Box>
 
-            <Button
-              component="a"
-              href={selected ? toTelHref(selected.phone) : "#"}
-              variant="outlined"
-              startIcon={<CallRoundedIcon />}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2.5,
-                borderColor: "rgb(226 232 240)",
-              }}
-              disabled={!selected || !selected?.phone}
-            >
-              โทรหาลูกค้า
-            </Button>
+              <SectionCard title="บทสนทนา">
+                <Box className="grid gap-2">
+                  {selected.messages.map((m) => (
+                    <Box
+                      key={m.id}
+                      className={[
+                        "rounded-2xl border p-3",
+                        m.from === "customer"
+                          ? "border-slate-200 bg-white"
+                          : m.from === "agent"
+                          ? "border-slate-200 bg-slate-50"
+                          : "border-slate-200 bg-slate-100",
+                      ].join(" ")}
+                    >
+                      <Stack direction="row" className="items-center justify-between">
+                        <Typography className="text-xs font-semibold text-slate-700">
+                          {m.from === "customer"
+                            ? "ลูกค้า"
+                            : m.from === "agent"
+                            ? "แอดมิน"
+                            : "ระบบ"}
+                        </Typography>
+                        <Typography className="text-[11px] text-slate-500">
+                          {formatDateTimeTH(m.at)}
+                        </Typography>
+                      </Stack>
 
-            <Button
-              color="error"
-              variant="outlined"
-              startIcon={<DeleteOutlineRoundedIcon />}
-              onClick={() => selected && deleteTicket(selected.id)}
-              sx={{ textTransform: "none", borderRadius: 2.5 }}
-              disabled={!selected}
-            >
-              ลบ Ticket (จำลอง)
-            </Button>
+                      <Typography className="mt-1 text-sm text-slate-900 whitespace-pre-line">
+                        {m.text}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
 
-            <Typography className="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
-              <ScheduleRoundedIcon fontSize="inherit" />* ต่อ API ได้: inbound
-              messages (LINE/FB), SLA/due, owner permissions, canned replies,
-              attachments
-            </Typography>
-          </Stack>
+                <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+                  <CardContent className="p-4">
+                    <Stack spacing={1.25}>
+                      <TextField
+                        value={reply}
+                        onChange={(e) => setReply(e.target.value)}
+                        placeholder="พิมพ์ข้อความตอบลูกค้า..."
+                        multiline
+                        minRows={3}
+                        size="small"
+                        sx={roundedFieldSX}
+                      />
+
+                      <Stack direction="row" spacing={1} className="items-center justify-between">
+                        <Typography className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <SendRoundedIcon fontSize="inherit" />
+                          ส่งแบบจำลอง (ยังไม่ต่อ API จริง)
+                        </Typography>
+
+                        <Button
+                          onClick={sendReply}
+                          variant="contained"
+                          size="small"
+                          endIcon={<SendRoundedIcon />}
+                          sx={{
+                            textTransform: "none",
+                            bgcolor: "rgb(15 23 42)",
+                            boxShadow: "none",
+                            "&:hover": {
+                              bgcolor: "rgb(2 6 23)",
+                              boxShadow: "none",
+                            },
+                            borderRadius: 2,
+                          }}
+                        >
+                          ส่งข้อความ
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </SectionCard>
+
+              <SectionCard title="โน้ตภายใน (Internal)">
+                <TextField
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="เขียนโน้ตภายใน (ไม่ส่งให้ลูกค้า)..."
+                  multiline
+                  minRows={2}
+                  size="small"
+                  sx={roundedFieldSX}
+                />
+
+                <Stack direction="row" spacing={1} className="items-center justify-between">
+                  <Typography className="text-[11px] text-slate-500 flex items-center gap-1">
+                    <NotesRoundedIcon fontSize="inherit" />
+                    ใช้เพื่อสรุปเคส / สิ่งที่ต้องทำต่อ
+                  </Typography>
+
+                  <Button
+                    onClick={addInternalNote}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: 2,
+                      borderColor: "rgb(226 232 240)",
+                    }}
+                  >
+                    บันทึกโน้ต
+                  </Button>
+                </Stack>
+
+                {(selected.internalNotes?.length ?? 0) > 0 ? (
+                  <Box className="grid gap-2">
+                    {selected.internalNotes.slice(0, 6).map((n, i) => (
+                      <Box
+                        key={i}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                      >
+                        <Typography className="text-sm text-slate-900 whitespace-pre-line">
+                          {n}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography className="text-xs text-slate-500">
+                    ยังไม่มีโน้ตภายใน
+                  </Typography>
+                )}
+              </SectionCard>
+
+              <SectionCard title="การดำเนินการ">
+                <Stack spacing={1}>
+                  <Button
+                    component="a"
+                    href={toChatHref(selected.channel, selected)}
+                    target="_blank"
+                    rel="noreferrer"
+                    variant="contained"
+                    startIcon={<ChatRoundedIcon />}
+                    sx={{
+                      textTransform: "none",
+                      bgcolor: "rgb(15 23 42)",
+                      boxShadow: "none",
+                      "&:hover": { bgcolor: "rgb(2 6 23)", boxShadow: "none" },
+                      borderRadius: 2.5,
+                    }}
+                  >
+                    เปิดแชทภายนอก (จำลอง)
+                  </Button>
+
+                  <Button
+                    component="a"
+                    href={toTelHref(selected.phone)}
+                    variant="outlined"
+                    startIcon={<CallRoundedIcon />}
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: 2.5,
+                      borderColor: "rgb(226 232 240)",
+                    }}
+                    disabled={!selected.phone}
+                  >
+                    โทรหาลูกค้า
+                  </Button>
+
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    startIcon={<DeleteOutlineRoundedIcon />}
+                    onClick={() => deleteTicket(selected.id)}
+                    sx={{ textTransform: "none", borderRadius: 2.5 }}
+                  >
+                    ลบ Ticket (จำลอง)
+                  </Button>
+
+                  <Typography className="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
+                    <ScheduleRoundedIcon fontSize="inherit" />
+                    * ต่อ API ได้: inbound messages, SLA/due, owner permissions, canned replies, attachments
+                  </Typography>
+                </Stack>
+              </SectionCard>
+            </Stack>
+          ) : null}
         </Box>
       </Drawer>
 
