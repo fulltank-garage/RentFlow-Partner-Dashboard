@@ -23,7 +23,6 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 
 type Props = {
@@ -47,7 +46,6 @@ export default function AdminTopbar({
           bgcolor: "white",
           color: "rgb(15 23 42)",
           borderBottom: "1px solid rgb(226 232 240)",
-          boxShadow: "0 8px 28px rgba(15, 23, 42, 0.06)",
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
         }}
