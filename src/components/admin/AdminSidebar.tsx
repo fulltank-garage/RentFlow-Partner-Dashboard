@@ -199,7 +199,6 @@ export default function AdminSidebar({
     width: drawerWidth,
     borderRight: "1px solid rgb(226 232 240)",
     bgcolor: "#fff",
-    boxShadow: "0 8px 28px rgba(15, 23, 42, 0.06)",
   } as const;
 
   return (
