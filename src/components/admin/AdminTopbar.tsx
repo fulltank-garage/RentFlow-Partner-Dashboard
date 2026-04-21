@@ -15,6 +15,7 @@ import {
   Stack,
   Toolbar,
   Chip,
+  Typography,
 } from "@mui/material";
 
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -24,6 +25,11 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
+import { readStoreProfile, type PartnerStoreProfile } from "@/src/lib/partner-store";
+import { rentFlowPartnerApi } from "@/src/lib/rentflow-api";
+
+const TOKEN_COOKIE = "rentflow_session";
 
 type Props = {
   onOpenMobile: () => void;
@@ -36,6 +42,30 @@ export default function AdminTopbar({
 }: Props) {
   const router = useRouter();
   const [openProfile, setOpenProfile] = React.useState(false);
+  const [storeProfile, setStoreProfile] =
+    React.useState<PartnerStoreProfile | null>(null);
+
+  React.useEffect(() => {
+    const syncStoreProfile = () => setStoreProfile(readStoreProfile());
+
+    syncStoreProfile();
+    window.addEventListener("storage", syncStoreProfile);
+    window.addEventListener("rentflow-store-profile-updated", syncStoreProfile);
+
+    return () => {
+      window.removeEventListener("storage", syncStoreProfile);
+      window.removeEventListener(
+        "rentflow-store-profile-updated",
+        syncStoreProfile
+      );
+    };
+  }, []);
+
+  async function logout() {
+    await rentFlowPartnerApi.logout().catch(() => null);
+    document.cookie = `${TOKEN_COOKIE}=; path=/; max-age=0`;
+    router.replace("/login");
+  }
 
   return (
     <>
@@ -62,6 +92,35 @@ export default function AdminTopbar({
           </IconButton>
 
           <Box sx={{ ml: "auto" }}>
+            {storeProfile ? (
+              <Button
+                onClick={() => router.push("/admin/store-setup")}
+                startIcon={<StorefrontRoundedIcon />}
+                className="mr-3 hidden rounded-xl! border-slate-200! text-slate-900! md:inline-flex"
+                variant="outlined"
+                sx={{ textTransform: "none" }}
+              >
+                <Stack spacing={0} alignItems="flex-start">
+                  <Typography className="text-xs font-bold leading-4 text-slate-900">
+                    {storeProfile.shopName}
+                  </Typography>
+                  <Typography className="text-[11px] leading-4 text-slate-500">
+                    {storeProfile.storefrontDomain}
+                  </Typography>
+                </Stack>
+              </Button>
+            ) : (
+              <Button
+                onClick={() => router.push("/admin/store-setup")}
+                startIcon={<StorefrontRoundedIcon />}
+                className="mr-3 hidden rounded-xl! border-amber-200! bg-amber-50! text-amber-900! md:inline-flex"
+                variant="outlined"
+                sx={{ textTransform: "none" }}
+              >
+                ตั้งค่าร้าน
+              </Button>
+            )}
+
             <IconButton
               onClick={() => setOpenProfile(true)}
               sx={{
@@ -355,7 +414,7 @@ export default function AdminTopbar({
               },
             }}
             onClick={() => {
-              alert("TODO: logout");
+              logout();
               setOpenProfile(false);
             }}
           >

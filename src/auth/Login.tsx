@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     Alert,
@@ -10,7 +9,6 @@ import {
     Card,
     CardContent,
     CircularProgress,
-    Container,
     Divider,
     IconButton,
     InputAdornment,
@@ -19,13 +17,16 @@ import {
     Typography,
 } from "@mui/material";
 
-import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import DirectionsCarRoundedIcon from "@mui/icons-material/DirectionsCarRounded";
-
-const TOKEN_COOKIE = "rf_token";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import {
+    RentFlowApiError,
+    rentFlowPartnerApi,
+} from "@/src/lib/rentflow-api";
+import { writeStoreProfile } from "@/src/lib/partner-store";
 
 const pillFieldSX = {
     "& .MuiOutlinedInput-root": {
@@ -60,57 +61,72 @@ const pillFieldSX = {
     },
 };
 
-function isEmail(v: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-}
-
 export default function Login() {
     const router = useRouter();
 
-    const [email, setEmail] = React.useState("");
+    const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [showPw, setShowPw] = React.useState(false);
 
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
 
-    const emailOk = email.length === 0 ? true : isEmail(email);
+    const usernameOk = username.length === 0 ? true : username.trim().length >= 3;
     const pwOk = password.length === 0 ? true : password.length >= 6;
 
-    const canSubmit = isEmail(email) && password.length >= 6 && !loading;
+    const canSubmit = username.trim().length >= 3 && password.length >= 6 && !loading;
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setError(null);
 
         if (!canSubmit) {
-            setError("กรุณากรอกอีเมลให้ถูกต้อง และรหัสผ่านอย่างน้อย 6 ตัวอักษร");
+            setError("กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ถูกต้อง");
             return;
         }
 
         try {
             setLoading(true);
 
-            // TODO: เปลี่ยนเป็น API จริงของคุณ
-            // ตัวอย่าง expected response: { token: "..." }
-            // const res = await fetch("/api/auth/login", { ... })
-            // const data = await res.json()
+            await rentFlowPartnerApi.login({
+                username: username.trim(),
+                password,
+            });
 
-            // ===== DEMO login (แทน API) =====
-            // ให้ login ได้เมื่อ email มีรูปแบบถูก + password >= 6
-            const token = "demo_token_" + Date.now();
-            // ===============================
-
-            // เซ็ต cookie ให้ middleware อ่านได้ (กัน /admin)
-            document.cookie = `${TOKEN_COOKIE}=${token}; path=/; max-age=${60 * 60 * 24 * 7
-                }`; // 7 วัน
-
-            // redirect กลับไปหน้าเดิมที่ user ตั้งใจเข้า
             const params = new URLSearchParams(window.location.search);
             const next = params.get("next") || "/admin/dashboard";
-            router.replace(next);
-        } catch (err: any) {
-            setError(err?.message || "เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
+            const safeNext = next.startsWith("/admin") ? next : "/admin/dashboard";
+
+            try {
+                const tenant = await rentFlowPartnerApi.getMyTenant();
+                writeStoreProfile({
+                    tenantId: tenant.id,
+                    shopName: tenant.shopName,
+                    domainSlug: tenant.domainSlug,
+                    storefrontDomain: tenant.publicDomain,
+                    ownerEmail: tenant.ownerEmail,
+                    status: tenant.status,
+                    plan: tenant.plan,
+                    createdAt: tenant.createdAt,
+                    updatedAt: tenant.updatedAt,
+                });
+                router.replace(safeNext);
+            } catch (tenantError) {
+                if (
+                    tenantError instanceof RentFlowApiError &&
+                    tenantError.status === 404
+                ) {
+                    router.replace("/admin/store-setup");
+                    return;
+                }
+                throw tenantError;
+            }
+        } catch (err: unknown) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่"
+            );
         } finally {
             setLoading(false);
         }
@@ -153,19 +169,18 @@ export default function Login() {
 
                         <Box component="form" onSubmit={handleSubmit} className="mt-3 grid gap-4">
                             <TextField
-                                label="อีเมล"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                label="ชื่อผู้ใช้"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 fullWidth
                                 sx={pillFieldSX}
-                                autoComplete="email"
-                                inputMode="email"
-                                error={!emailOk}
-                                helperText={!emailOk ? "รูปแบบอีเมลไม่ถูกต้อง" : " "}
+                                autoComplete="username"
+                                error={!usernameOk}
+                                helperText={!usernameOk ? "ชื่อผู้ใช้อย่างน้อย 3 ตัวอักษร" : " "}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <EmailRoundedIcon fontSize="small" />
+                                            <PersonRoundedIcon fontSize="small" />
                                         </InputAdornment>
                                     ),
                                 }}

@@ -8,13 +8,13 @@ import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import SupportAgentRoundedIcon from "@mui/icons-material/SupportAgentRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 import ExtensionRoundedIcon from "@mui/icons-material/ExtensionRounded";
 import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
-import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
 import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
 
 export type AdminNavGroup =
   | "Operations"
@@ -116,6 +116,20 @@ export const ADMIN_NAV: AdminNavItem[] = [
     icon: AssessmentRoundedIcon,
     group: "Analytics",
     color: "#5B21B6",
+  },
+  {
+    label: "ตั้งค่าร้าน / Domain",
+    href: "/admin/store-setup",
+    icon: StorefrontRoundedIcon,
+    group: "Administration",
+    color: "#0F766E",
+  },
+  {
+    label: "เชื่อม LINE OA",
+    href: "/admin/line",
+    icon: LinkRoundedIcon,
+    group: "Administration",
+    color: "#15803D",
   },
   {
     label: "ซัพพอร์ต",
