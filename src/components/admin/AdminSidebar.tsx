@@ -49,48 +49,33 @@ export default function AdminSidebar({
 
   const content = (
     <Box
-      className="h-full bg-white"
+      className="ios-glass h-full border-0"
       sx={{ display: "flex", flexDirection: "column" }}
     >
       <Box className="p-2 sm:p-2.5 md:p-3 lg:p-3" sx={{ flex: "0 0 auto" }}>
         <Stack direction="row" spacing={1.25} alignItems="center">
-          <Box className="grid h-10 w-10 place-items-center rounded-lg! border border-slate-200 bg-slate-50">
+          <Box className="grid h-10 w-10 place-items-center rounded-[17px] bg-linear-to-br from-sky-500 via-blue-500 to-emerald-400 text-white shadow-[0_14px_34px_rgba(59,130,246,0.24)]">
             <DirectionsCarRoundedIcon fontSize="medium" />
           </Box>
           <Box>
             <Typography className="text-sm font-extrabold text-slate-900">
-              RentFlow Admin
+              RentFlow Partner
+            </Typography>
+            <Typography className="text-[11px] font-semibold text-slate-500">
+              ศูนย์จัดการร้าน
             </Typography>
           </Box>
         </Stack>
       </Box>
 
-      <Divider className="border-slate-200!" />
+      <Divider className="border-white/60!" />
 
       <Box
-        className="px-2 py-3"
+        className="ios-scrollbar px-2 py-3"
         sx={{
           flex: "1 1 auto",
           minHeight: 0,
           overflowY: "auto",
-
-          "&::-webkit-scrollbar": { width: 10 },
-          "&::-webkit-scrollbar-track": { background: "transparent" },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "transparent",
-            borderRadius: 999,
-            border: "3px solid transparent",
-            backgroundClip: "content-box",
-          },
-          "&::-webkit-scrollbar-button": {
-            display: "none",
-            height: 0,
-            width: 0,
-          },
-
-          "&:hover::-webkit-scrollbar-thumb": {
-            backgroundColor: "rgb(203 213 225)",
-          },
         }}
       >
         {GROUPS.map((group, index) => {
@@ -103,11 +88,11 @@ export default function AdminSidebar({
               sx={{
                 mb: 1,
                 ...(index !== 0 && {
-                  borderTop: "1px solid rgb(226 232 240)",
+                  borderTop: "1px solid rgba(255,255,255,0.62)",
                 }),
               }}
             >
-              <Typography className="px-2 pb-2 pt-3 text-[11px] font-semibold tracking-wide text-slate-500">
+              <Typography className="px-2 pb-2 pt-3 text-[11px] font-bold tracking-wide text-slate-500">
                 {GROUP_LABEL[group]}
               </Typography>
 
@@ -140,17 +125,29 @@ export default function AdminSidebar({
                         minHeight: { xs: 54, sm: 50, md: 46 },
                         px: { xs: 2.5, md: 2 },
                         py: { xs: 1.4, md: 1.1 },
-                        bgcolor: active ? "rgb(241 245 249)" : "transparent",
+                        bgcolor: active
+                          ? "rgba(255,255,255,0.82)"
+                          : "transparent",
                         border: active
-                          ? "1px solid rgb(203 213 225)"
+                          ? "1px solid rgba(255,255,255,0.78)"
                           : "1px solid transparent",
+                        boxShadow: active
+                          ? "0 12px 34px rgba(15,23,42,0.08)"
+                          : "none",
+                        backdropFilter: active ? "blur(18px)" : "none",
                         "&:hover": {
-                          backgroundColor: active
-                            ? "rgb(241 245 249)"
-                            : "rgb(248 250 252)",
-                          border: "1px solid rgb(203 213 225)",
+                          backgroundColor: "rgba(255,255,255,0.68)",
+                          border: "1px solid rgba(255,255,255,0.78)",
+                          boxShadow: "0 12px 30px rgba(15,23,42,0.07)",
                         },
-                        transition: "background-color 150ms ease, border 150ms ease",
+                        "&.Mui-selected": {
+                          backgroundColor: "rgba(255,255,255,0.82)",
+                        },
+                        "&.Mui-selected:hover": {
+                          backgroundColor: "rgba(255,255,255,0.78)",
+                        },
+                        transition:
+                          "background-color 150ms ease, border 150ms ease, box-shadow 150ms ease",
                       }}
                       selected={active}
                     >
@@ -160,7 +157,7 @@ export default function AdminSidebar({
                         <Icon
                           sx={{
                             fontSize: { xs: 24, md: 22 },
-                            color: iconColor,
+                            color: active ? "var(--rf-ios-blue)" : iconColor,
                             opacity: active ? 1 : 0.7,
 
                             transition: "opacity 150ms ease",
@@ -174,7 +171,7 @@ export default function AdminSidebar({
                           <Typography
                             sx={{
                               fontSize: { xs: 17, md: 15.5 },
-                              fontWeight: 500,
+                              fontWeight: active ? 800 : 650,
                               lineHeight: 1.3,
                               letterSpacing: 0.2,
                               color: "rgb(30 41 59)",
@@ -197,8 +194,11 @@ export default function AdminSidebar({
 
   const paperSx = {
     width: drawerWidth,
-    borderRight: "1px solid rgb(226 232 240)",
-    bgcolor: "#fff",
+    borderRight: "1px solid rgba(148,163,184,0.22)",
+    bgcolor: "rgba(255,255,255,0.58)",
+    boxShadow: "18px 0 56px rgba(15,23,42,0.08)",
+    backdropFilter: "blur(28px) saturate(1.35)",
+    WebkitBackdropFilter: "blur(28px) saturate(1.35)",
   } as const;
 
   return (

@@ -26,7 +26,10 @@ import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
-import { readStoreProfile, type PartnerStoreProfile } from "@/src/lib/partner-store";
+import {
+  readStoreProfile,
+  type PartnerStoreProfile,
+} from "@/src/lib/partner-store";
 import { authService } from "@/src/services/auth/auth.service";
 
 const TOKEN_COOKIE = "rentflow_session";
@@ -73,19 +76,24 @@ export default function AdminTopbar({
         position="fixed"
         elevation={0}
         sx={{
-          bgcolor: "white",
+          bgcolor: "rgba(255,255,255,0.68)",
           color: "rgb(15 23 42)",
-          borderBottom: "1px solid rgb(226 232 240)",
+          backdropFilter: "blur(26px) saturate(1.35)",
+          WebkitBackdropFilter: "blur(26px) saturate(1.35)",
+          borderBottom: "1px solid rgba(148,163,184,0.22)",
+          boxShadow: "0 16px 50px rgba(15,23,42,0.06)",
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: 68 }}>
           <IconButton
             onClick={onOpenMobile}
             sx={{
               display: { xs: "inline-flex", md: "none" },
-              p: 0,
+              bgcolor: "rgba(255,255,255,0.72)",
+              border: "1px solid rgba(148,163,184,0.22)",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.92)" },
             }}
           >
             <MenuRoundedIcon fontSize="large" />
@@ -96,9 +104,9 @@ export default function AdminTopbar({
               <Button
                 onClick={() => router.push("/admin/store-setup")}
                 startIcon={<StorefrontRoundedIcon />}
-                className="mr-3 hidden rounded-xl! border-slate-200! text-slate-900! md:inline-flex"
+                className="ios-chip mr-3 hidden text-slate-900! md:inline-flex"
                 variant="outlined"
-                sx={{ textTransform: "none" }}
+                sx={{ textTransform: "none", px: 2, py: 0.75 }}
               >
                 <Stack spacing={0} alignItems="flex-start">
                   <Typography className="text-xs font-bold leading-4 text-slate-900">
@@ -113,9 +121,19 @@ export default function AdminTopbar({
               <Button
                 onClick={() => router.push("/admin/store-setup")}
                 startIcon={<StorefrontRoundedIcon />}
-                className="mr-3 hidden rounded-xl! border-amber-200! bg-amber-50! text-amber-900! md:inline-flex"
+                className="mr-3 hidden text-amber-950! md:inline-flex"
                 variant="outlined"
-                sx={{ textTransform: "none" }}
+                sx={{
+                  textTransform: "none",
+                  px: 2,
+                  bgcolor: "rgba(255, 248, 235, 0.76)",
+                  borderColor: "rgba(251, 191, 36, 0.36)",
+                  boxShadow: "0 10px 28px rgba(251,191,36,0.1)",
+                  "&:hover": {
+                    bgcolor: "rgba(255, 248, 235, 0.94)",
+                    borderColor: "rgba(251, 191, 36, 0.5)",
+                  },
+                }}
               >
                 ตั้งค่าร้าน
               </Button>
@@ -144,8 +162,11 @@ export default function AdminTopbar({
                   sx={{
                     width: 42,
                     height: 42,
-                    bgcolor: "rgb(148 163 184)",
-                    border: "2px solid rgb(226 232 240)"
+                    bgcolor: "transparent",
+                    background:
+                      "linear-gradient(135deg, var(--rf-ios-blue), var(--rf-ios-green))",
+                    border: "2px solid rgba(255,255,255,0.82)",
+                    boxShadow: "0 10px 28px rgba(0,122,255,0.2)",
                   }}
                 >
                   A
@@ -159,7 +180,7 @@ export default function AdminTopbar({
                     width: 18,
                     height: 18,
                     borderRadius: "999px",
-                    bgcolor: "rgb(51 65 85)",
+                    bgcolor: "rgba(15,23,42,0.86)",
                     border: "2px solid white",
                     display: "grid",
                     placeItems: "center",
@@ -182,7 +203,11 @@ export default function AdminTopbar({
         PaperProps={{
           sx: {
             width: { xs: "65vw", sm: 300 },
-            borderLeft: "1px solid rgb(226 232 240)",
+            bgcolor: "rgba(255,255,255,0.74)",
+            borderLeft: "1px solid rgba(148,163,184,0.22)",
+            boxShadow: "-18px 0 56px rgba(15,23,42,0.1)",
+            backdropFilter: "blur(28px) saturate(1.35)",
+            WebkitBackdropFilter: "blur(28px) saturate(1.35)",
           },
         }}
       >
@@ -205,19 +230,27 @@ export default function AdminTopbar({
               transform: "translate(-50%, -50%)",
               fontWeight: 500,
               fontSize: 20,
+              color: "rgb(15 23 42)",
             }}
           >
             โปรไฟล์
           </Box>
 
           <Box sx={{ marginLeft: "auto" }}>
-            <IconButton sx={{ p: 0 }} onClick={() => setOpenProfile(false)}>
+            <IconButton
+              sx={{
+                bgcolor: "rgba(255,255,255,0.72)",
+                border: "1px solid rgba(148,163,184,0.22)",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.92)" },
+              }}
+              onClick={() => setOpenProfile(false)}
+            >
               <CloseRoundedIcon fontSize="large" />
             </IconButton>
           </Box>
         </Box>
 
-        <Divider />
+        <Divider className="border-white/60!" />
 
         <Box sx={{ px: 1.5, py: 3 }}>
           <Stack direction="row" spacing={1.5} alignItems="center">
@@ -227,7 +260,11 @@ export default function AdminTopbar({
               sx={{
                 width: 44,
                 height: 44,
-                bgcolor: "rgb(15 23 42)",
+                bgcolor: "transparent",
+                background:
+                  "linear-gradient(135deg, var(--rf-ios-blue), var(--rf-ios-green))",
+                border: "2px solid rgba(255,255,255,0.82)",
+                boxShadow: "0 10px 28px rgba(0,122,255,0.2)",
               }}
             >
               A
@@ -262,26 +299,25 @@ export default function AdminTopbar({
                 spacing={0.75}
                 sx={{ mt: 1 }}
                 useFlexGap
-                flexWrap="wrap"
-              >
+              flexWrap="wrap"
+            >
                 <Chip
                   size="small"
-                  label="Role: Admin"
+                  label="เจ้าของร้าน"
+                  className="ios-chip"
                   sx={{
                     height: 24,
                     fontSize: 12,
-                    bgcolor: "rgb(241 245 249)",
-                    border: "1px solid rgb(226 232 240)",
                   }}
                 />
                 <Chip
                   size="small"
-                  label="Status: Online"
+                  label="ออนไลน์"
                   sx={{
                     height: 24,
                     fontSize: 12,
-                    bgcolor: "rgb(236 253 245)",
-                    border: "1px solid rgb(167 243 208)",
+                    bgcolor: "rgba(236,253,245,0.78)",
+                    border: "1px solid rgba(52,199,89,0.26)",
                     color: "rgb(6 95 70)",
                   }}
                 />
@@ -290,7 +326,7 @@ export default function AdminTopbar({
           </Stack>
         </Box>
 
-        <Divider />
+        <Divider className="border-white/60!" />
 
         <List disablePadding sx={{ px: 1.5, py: 1.5 }}>
           <ListItemButton
@@ -306,11 +342,12 @@ export default function AdminTopbar({
               py: 1.5,
               bgcolor: "transparent",
               "&:hover": {
-                bgcolor: "rgb(248 250 252)",
-                borderColor: "rgb(148 163 184)",
+                bgcolor: "rgba(255,255,255,0.72)",
+                borderColor: "rgba(255,255,255,0.82)",
+                boxShadow: "0 12px 30px rgba(15,23,42,0.07)",
               },
               transition:
-                "background-color 150ms ease, border-color 150ms ease",
+                "background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
             }}
           >
             <Box
@@ -320,8 +357,9 @@ export default function AdminTopbar({
                 borderRadius: 2.5,
                 display: "grid",
                 placeItems: "center",
-                bgcolor: "rgb(241 245 249)",
-                border: "1px solid rgb(226 232 240)",
+                bgcolor: "rgba(255,255,255,0.72)",
+                border: "1px solid rgba(148,163,184,0.22)",
+                boxShadow: "0 10px 28px rgba(15,23,42,0.05)",
                 mr: 1.5,
                 flex: "0 0 auto",
               }}
@@ -362,8 +400,9 @@ export default function AdminTopbar({
               py: 1.5,
               mt: 1,
               "&:hover": {
-                bgcolor: "rgb(248 250 252)",
-                borderColor: "rgb(148 163 184)",
+                bgcolor: "rgba(255,255,255,0.72)",
+                borderColor: "rgba(255,255,255,0.82)",
+                boxShadow: "0 12px 30px rgba(15,23,42,0.07)",
               },
             }}
           >
@@ -374,8 +413,9 @@ export default function AdminTopbar({
                 borderRadius: 2.5,
                 display: "grid",
                 placeItems: "center",
-                bgcolor: "rgb(241 245 249)",
-                border: "1px solid rgb(226 232 240)",
+                bgcolor: "rgba(255,255,255,0.72)",
+                border: "1px solid rgba(148,163,184,0.22)",
+                boxShadow: "0 10px 28px rgba(15,23,42,0.05)",
                 mr: 1.5,
               }}
             >
@@ -397,7 +437,7 @@ export default function AdminTopbar({
 
         <Box sx={{ flex: 1 }} />
 
-        <Divider />
+        <Divider className="border-white/60!" />
 
         <Box sx={{ p: 1.5 }}>
           <Button
@@ -409,6 +449,7 @@ export default function AdminTopbar({
               textTransform: "none",
               borderRadius: 3,
               bgcolor: "rgb(220 38 38)",
+              boxShadow: "0 14px 34px rgba(220,38,38,0.2)",
               "&:hover": {
                 bgcolor: "rgb(185 28 28)",
               },
