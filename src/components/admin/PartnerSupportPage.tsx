@@ -15,10 +15,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
-import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
-import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
 import { supportService } from "@/src/services/support/support.service";
 import type {
@@ -42,9 +38,9 @@ function formatDate(value?: string) {
 
 function channelLabel(value: string) {
   const map: Record<string, string> = {
-    line: "LINE OA",
-    facebook: "Facebook",
-    whatsapp: "WhatsApp",
+    line: "บัญชีไลน์",
+    facebook: "เฟซบุ๊ก",
+    whatsapp: "วอตส์แอป",
     phone: "โทรศัพท์",
     webform: "ฟอร์มเว็บ",
   };
@@ -70,6 +66,20 @@ function priorityLabel(value: string) {
     urgent: "ด่วน",
   };
   return map[value] || value;
+}
+
+function statusChipClass(value: string) {
+  if (["resolved"].includes(value)) return "partner-chip partner-chip-green";
+  if (["closed"].includes(value)) return "partner-chip partner-chip-rose";
+  if (["new", "waiting"].includes(value)) return "partner-chip partner-chip-orange";
+  if (["open"].includes(value)) return "partner-chip partner-chip-blue";
+  return "partner-chip";
+}
+
+function priorityChipClass(value: string) {
+  if (["urgent", "high"].includes(value)) return "partner-chip partner-chip-rose";
+  if (["normal"].includes(value)) return "partner-chip partner-chip-blue";
+  return "partner-chip";
 }
 
 function useSnack() {
@@ -162,7 +172,7 @@ export function PartnerSupportPage() {
     } catch (error: unknown) {
       setSnack({
         open: true,
-        message: error instanceof Error ? error.message : "อัปเดต ticket ไม่สำเร็จ",
+        message: error instanceof Error ? error.message : "อัปเดตเคสไม่สำเร็จ",
         severity: "error",
       });
     }
@@ -223,12 +233,11 @@ export function PartnerSupportPage() {
             ซัพพอร์ตลูกค้า
           </Typography>
           <Typography className="text-sm text-slate-600">
-            ดึงข้อมูล ticket และข้อความจริงจากฐานข้อมูลของร้าน รวมทั้งข้อความจาก LINE OA
+            รวมข้อความจากลูกค้าและทีมงานไว้ในที่เดียว เพื่อให้ติดตามเคสได้ง่ายขึ้น
           </Typography>
         </Box>
         <Button
           variant="outlined"
-          startIcon={<RefreshRoundedIcon />}
           onClick={load}
           sx={{ textTransform: "none" }}
         >
@@ -237,12 +246,12 @@ export function PartnerSupportPage() {
       </Stack>
 
       <Box className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card elevation={0} className="rounded-3xl! border border-slate-200 bg-white">
+        <Card elevation={0} className="partner-card rounded-[30px]!">
           <CardContent className="p-5!">
             <Stack spacing={2}>
               <Stack direction={{ xs: "column", md: "row" }} spacing={1.25}>
                 <TextField
-                  label="ค้นหา ticket"
+                  label="ค้นหาเคส"
                   value={q}
                   onChange={(event) => setQ(event.target.value)}
                   fullWidth
@@ -281,17 +290,16 @@ export function PartnerSupportPage() {
 
               {loading ? (
                 <Box className="grid min-h-80 place-items-center text-sm text-slate-500">
-                  กำลังโหลด ticket...
+                  กำลังโหลดเคส...
                 </Box>
               ) : filteredTickets.length === 0 ? (
-                <Box className="grid min-h-80 place-items-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 text-center">
+                <Box className="partner-empty">
                   <Box>
-                    <ChatRoundedIcon className="text-slate-400" sx={{ fontSize: 42 }} />
-                    <Typography className="mt-3 text-sm font-semibold text-slate-600">
-                      ยังไม่มี ticket จากข้อมูลจริง
+                    <Typography className="text-sm font-semibold text-slate-600">
+                      ยังไม่มีเคส
                     </Typography>
                     <Typography className="mt-1 text-sm text-slate-500">
-                      เมื่อมีข้อความจาก LINE OA หรือทีมงานเริ่มตอบกลับ ข้อมูลจะมาแสดงตรงนี้
+                      เมื่อมีข้อความจากลูกค้าหรือทีมงานเริ่มตอบกลับ ข้อมูลจะมาแสดงตรงนี้
                     </Typography>
                   </Box>
                 </Box>
@@ -307,9 +315,9 @@ export function PartnerSupportPage() {
                       onClick={() => setSelectedId(ticket.id)}
                     >
                       <Stack direction="row" spacing={1} className="items-center">
-                        <Chip size="small" label={channelLabel(ticket.channel)} variant="outlined" />
-                        <Chip size="small" label={statusLabel(ticket.status)} />
-                        <Chip size="small" label={priorityLabel(ticket.priority)} variant="outlined" />
+                        <Chip size="small" label={channelLabel(ticket.channel)} className="partner-chip" />
+                        <Chip size="small" label={statusLabel(ticket.status)} className={statusChipClass(ticket.status)} />
+                        <Chip size="small" label={priorityLabel(ticket.priority)} className={priorityChipClass(ticket.priority)} />
                       </Stack>
                       <Typography className="mt-3 font-black text-slate-950">
                         {ticket.subject}
@@ -331,12 +339,12 @@ export function PartnerSupportPage() {
           </CardContent>
         </Card>
 
-        <Card elevation={0} className="rounded-3xl! border border-slate-200 bg-white">
+        <Card elevation={0} className="partner-card rounded-[30px]!">
           <CardContent className="p-5!">
             {!selectedTicket ? (
               <Box className="grid min-h-80 place-items-center text-center">
                 <Typography className="text-sm text-slate-500">
-                  เลือก ticket เพื่อดูรายละเอียด
+                  เลือกเคสเพื่อดูรายละเอียด
                 </Typography>
               </Box>
             ) : (
@@ -352,7 +360,7 @@ export function PartnerSupportPage() {
                         {selectedTicket.bookingCode ? ` • ${selectedTicket.bookingCode}` : ""}
                       </Typography>
                     </Box>
-                    <Chip label={channelLabel(selectedTicket.channel)} variant="outlined" />
+                    <Chip label={channelLabel(selectedTicket.channel)} className="partner-chip" />
                   </Stack>
                 </Box>
 
@@ -443,7 +451,7 @@ export function PartnerSupportPage() {
                                     ? "ทีมงาน"
                                     : "ระบบ"
                               }
-                              variant="outlined"
+                              className="partner-chip"
                             />
                             <Typography className="text-xs text-slate-500">
                               {formatDate(message.at)}
@@ -468,11 +476,10 @@ export function PartnerSupportPage() {
                   minRows={3}
                   value={reply}
                   onChange={(event) => setReply(event.target.value)}
-                  placeholder="พิมพ์ข้อความตอบกลับผ่าน LINE OA หรือบันทึกลงประวัติเคส"
+                  placeholder="พิมพ์ข้อความตอบกลับลูกค้าหรือบันทึกลงประวัติเคส"
                 />
                 <Button
                   variant="contained"
-                  startIcon={<SendRoundedIcon />}
                   onClick={sendReply}
                   disabled={!reply.trim() || savingReply}
                   sx={{ textTransform: "none", bgcolor: "rgb(15 23 42)" }}
@@ -483,10 +490,7 @@ export function PartnerSupportPage() {
                 <Divider />
 
                 <Box>
-                  <Stack direction="row" spacing={1.25} className="items-center">
-                    <NotesRoundedIcon />
-                    <Typography className="font-black text-slate-950">โน้ตภายในทีม</Typography>
-                  </Stack>
+                  <Typography className="font-black text-slate-950">โน้ตภายในทีม</Typography>
                   <Stack spacing={1.5} className="mt-3">
                     {selectedTicket.internalNotes.length ? (
                       selectedTicket.internalNotes.map((noteItem) => (
@@ -517,7 +521,6 @@ export function PartnerSupportPage() {
                 />
                 <Button
                   variant="outlined"
-                  startIcon={<NotesRoundedIcon />}
                   onClick={saveNote}
                   disabled={!note.trim() || savingNote}
                   sx={{ textTransform: "none" }}

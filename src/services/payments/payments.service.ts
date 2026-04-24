@@ -10,12 +10,12 @@ export const paymentsService = {
     );
   },
 
-  verifyPayment(paymentId: string, slipUrl?: string) {
+  verifyPayment(paymentId: string) {
     return requestPartner<null>(
       `/partner/payments/${encodeURIComponent(paymentId)}/verify`,
       {
         method: "PATCH",
-        body: JSON.stringify({ slipUrl }),
+        body: JSON.stringify({}),
       }
     );
   },

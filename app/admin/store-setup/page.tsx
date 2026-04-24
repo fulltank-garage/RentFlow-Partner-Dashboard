@@ -8,7 +8,6 @@ import {
     Button,
     Card,
     CardContent,
-    Chip,
     CircularProgress,
     Divider,
     InputAdornment,
@@ -17,10 +16,6 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
-import DomainRoundedIcon from "@mui/icons-material/DomainRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import {
     RENTFLOW_ROOT_DOMAIN,
     buildStorefrontDomain,
@@ -36,6 +31,10 @@ export default function StoreSetupPage() {
     const router = useRouter();
     const [shopName, setShopName] = React.useState("");
     const [domainSlug, setDomainSlug] = React.useState("");
+    const [logoUrl, setLogoUrl] = React.useState("");
+    const [promoImageUrl, setPromoImageUrl] = React.useState("");
+    const [logoChanged, setLogoChanged] = React.useState(false);
+    const [promoImageChanged, setPromoImageChanged] = React.useState(false);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState(
         "กรุณากรอกชื่อร้านและชื่อโดเมนให้ถูกต้อง"
@@ -48,6 +47,8 @@ export default function StoreSetupPage() {
         if (profile) {
             setShopName(profile.shopName);
             setDomainSlug(profile.domainSlug);
+            setLogoUrl(profile.logoUrl || "");
+            setPromoImageUrl(profile.promoImageUrl || "");
         }
 
         tenantService
@@ -62,11 +63,17 @@ export default function StoreSetupPage() {
                     ownerEmail: tenant.ownerEmail,
                     status: tenant.status,
                     plan: tenant.plan,
+                    logoUrl: tenant.logoUrl ?? profile?.logoUrl,
+                    promoImageUrl: tenant.promoImageUrl ?? profile?.promoImageUrl,
                     createdAt: tenant.createdAt,
                     updatedAt: tenant.updatedAt,
                 });
                 setShopName(tenant.shopName);
                 setDomainSlug(tenant.domainSlug);
+                setLogoUrl(tenant.logoUrl ?? profile?.logoUrl ?? "");
+                setPromoImageUrl(tenant.promoImageUrl ?? profile?.promoImageUrl ?? "");
+                setLogoChanged(false);
+                setPromoImageChanged(false);
             })
             .catch((error: unknown) => {
                 if (
@@ -104,6 +111,65 @@ export default function StoreSetupPage() {
         !domainError &&
         !saving;
 
+    function readImageFile(
+        event: React.ChangeEvent<HTMLInputElement>,
+        options: {
+            maxSize: number;
+            maxSizeLabel: string;
+            onLoad: (value: string) => void;
+        }
+    ) {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            setSnackbarMessage("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (file.size > options.maxSize) {
+            setSnackbarMessage(`ไฟล์รูปภาพควรมีขนาดไม่เกิน ${options.maxSizeLabel}`);
+            setSnackbarOpen(true);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (typeof reader.result === "string") {
+                options.onLoad(reader.result);
+            }
+        };
+        reader.onerror = () => {
+            setSnackbarMessage("ไม่สามารถอ่านไฟล์โลโก้ได้");
+            setSnackbarOpen(true);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function handleLogoChange(event: React.ChangeEvent<HTMLInputElement>) {
+        readImageFile(event, {
+            maxSize: 5 * 1024 * 1024,
+            maxSizeLabel: "5 เมกะไบต์",
+            onLoad: (value) => {
+                setLogoUrl(value);
+                setLogoChanged(true);
+            },
+        });
+    }
+
+    function handlePromoImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+        readImageFile(event, {
+            maxSize: 5 * 1024 * 1024,
+            maxSizeLabel: "5 เมกะไบต์",
+            onLoad: (value) => {
+                setPromoImageUrl(value);
+                setPromoImageChanged(true);
+            },
+        });
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -115,9 +181,13 @@ export default function StoreSetupPage() {
 
         try {
             setSaving(true);
+            const currentLogoUrl = logoUrl.trim();
+            const currentPromoImageUrl = promoImageUrl.trim();
             const tenant = await tenantService.saveMyTenant({
                 shopName,
                 domainSlug: normalizedSlug,
+                ...(logoChanged ? { logoUrl: currentLogoUrl } : {}),
+                ...(promoImageChanged ? { promoImageUrl: currentPromoImageUrl } : {}),
             });
             writeStoreProfile({
                 tenantId: tenant.id,
@@ -127,6 +197,8 @@ export default function StoreSetupPage() {
                 ownerEmail: tenant.ownerEmail,
                 status: tenant.status,
                 plan: tenant.plan,
+                logoUrl: tenant.logoUrl ?? (currentLogoUrl || null),
+                promoImageUrl: tenant.promoImageUrl ?? (currentPromoImageUrl || null),
                 createdAt: tenant.createdAt,
                 updatedAt: tenant.updatedAt,
             });
@@ -147,124 +219,202 @@ export default function StoreSetupPage() {
     }
 
     return (
-        <Box className="mx-auto max-w-6xl">
-            <Box className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-                <Card
-                    elevation={0}
-                    className="rounded-3xl! border border-slate-200 bg-slate-950 text-white"
-                    sx={{ boxShadow: "none" }}
-                >
-                    <CardContent className="p-6! md:p-8!">
-                        <Chip
-                            label="Partner onboarding"
-                            className="bg-white/10! text-white!"
-                        />
-                        <Typography className="mt-6 text-3xl font-black tracking-tight md:text-5xl">
-                            ตั้งค่าร้านของคุณก่อนเริ่มใช้งาน
-                        </Typography>
-                        <Typography className="mt-4 text-sm leading-7 text-slate-300 md:text-base">
-                            เจ้าของร้านทุกเจ้าจะใช้หลังบ้านรวมที่ partner.rentflow.com
-                            แต่หน้าร้านสาธารณะจะแยกเป็น subdomain ของร้าน เช่น
-                            shop1.rentflow.com เพื่อให้ลูกค้าจำง่ายและแยกข้อมูลตามร้าน
-                        </Typography>
+        <Box className="partner-page mx-auto max-w-6xl">
+            <Box className="partner-page-header">
+                <Box className="partner-page-kicker">ตั้งค่าร้าน</Box>
+                <Typography className="partner-page-title">
+                    ตั้งค่าหน้าร้านให้พร้อมใช้งาน
+                </Typography>
+                <Typography className="partner-page-subtitle">
+                    ใส่ชื่อร้าน โดเมน และโลโก้ของคุณให้เรียบร้อย
+                    ระบบจะใช้ข้อมูลชุดนี้กับหน้าร้านของคุณโดยอัตโนมัติ
+                </Typography>
+            </Box>
 
-                        <Divider className="my-6! border-white/15!" />
-
-                        <Stack spacing={2}>
-                            {[
-                                "ตั้งชื่อร้านสำหรับแสดงในหลังบ้านและหน้าร้าน",
-                                "ตั้งชื่อโดเมนย่อยที่ไม่ซ้ำกับระบบ",
-                                "หลังบันทึก ระบบจะพาไปหน้าแดชบอร์ดของร้าน",
-                            ].map((item) => (
-                                <Stack key={item} direction="row" spacing={1.5}>
-                                    <CheckCircleRoundedIcon className="text-emerald-300" />
-                                    <Typography className="text-sm text-slate-200">
-                                        {item}
-                                    </Typography>
-                                </Stack>
-                            ))}
-                        </Stack>
-                    </CardContent>
-                </Card>
-
-                <Card
-                    elevation={0}
-                    className="rounded-3xl! border border-slate-200 bg-white"
-                    sx={{ boxShadow: "none" }}
-                >
-                    <CardContent className="p-6! md:p-8!">
-                        <Box>
-                            <Typography className="text-sm font-bold uppercase tracking-[0.22em] text-slate-400">
-                                Store identity
-                            </Typography>
-                            <Typography className="mt-2 text-2xl font-black text-slate-950">
-                                ชื่อร้านและ Domain
-                            </Typography>
-                            <Typography className="mt-2 text-sm leading-6 text-slate-500">
-                                ตัวอย่าง URL คือ {"{shop}.rentflow.com"} โดยค่า shop
-                                จะมาจากชื่อโดเมนที่เจ้าของร้านตั้งในหน้านี้
-                            </Typography>
-                        </Box>
-
+            <Box className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr]">
+                <Card elevation={0} className="partner-card rounded-[34px]!">
+                    <CardContent className="p-5! md:p-7!">
                         <Box
                             component="form"
                             onSubmit={handleSubmit}
-                            className="mt-6 grid gap-5"
+                            className="grid gap-5"
                         >
-                            <TextField
-                                label="ชื่อร้าน"
-                                value={shopName}
-                                onChange={(event) => setShopName(event.target.value)}
-                                fullWidth
-                                error={!!shopError}
-                                helperText={shopError || "เช่น Fulltank Premium Rental"}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <StorefrontRoundedIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            <TextField
-                                label="ชื่อ Domain ของร้าน"
-                                value={domainSlug}
-                                onChange={(event) =>
-                                    setDomainSlug(normalizeDomainSlug(event.target.value))
-                                }
-                                fullWidth
-                                error={!!domainError}
-                                helperText={
-                                    domainError ||
-                                    "ใช้ภาษาอังกฤษ ตัวเลข และขีดกลางเท่านั้น เช่น fulltank-garage"
-                                }
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <DomainRoundedIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <Typography className="text-sm font-semibold text-slate-500">
-                                                .{RENTFLOW_ROOT_DOMAIN}
-                                            </Typography>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            <Box className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                                <Typography className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                                    Preview URL
+                            <Box className="grid gap-2">
+                                <Typography className="partner-section-title text-slate-950">
+                                    ข้อมูลหน้าร้าน
                                 </Typography>
-                                <Typography className="mt-2 break-all text-2xl font-black text-slate-950">
+                                <Typography className="partner-section-subtitle">
+                                    ปรับรายละเอียดหลักของร้านให้ลูกค้าเห็นได้ชัดและจดจำง่าย
+                                </Typography>
+                            </Box>
+
+                            <Box className="rounded-[30px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+                                <Stack
+                                    direction={{ xs: "column", sm: "row" }}
+                                    spacing={2.5}
+                                    className="items-start sm:items-center"
+                                >
+                                    <Box className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-[28px] bg-[var(--rf-partner-chip)] text-[2rem] font-black tracking-[-0.04em] text-slate-600 md:h-28 md:w-28">
+                                        {logoUrl ? (
+                                            <Box
+                                                component="img"
+                                                src={logoUrl}
+                                                alt="โลโก้ร้าน"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            shopName.trim().charAt(0) || "ร"
+                                        )}
+                                    </Box>
+
+                                    <Box className="min-w-0 flex-1">
+                                        <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
+                                            โลโก้ร้าน
+                                        </Typography>
+                                        <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
+                                            ใช้แสดงบนแถบเมนู โปรไฟล์ร้าน และหน้าร้าน
+                                            แนะนำเป็นไฟล์สี่เหลี่ยมจัตุรัส ขนาดไม่เกิน 5 เมกะไบต์
+                                        </Typography>
+                                        <Stack
+                                            direction={{ xs: "column", sm: "row" }}
+                                            spacing={1.25}
+                                            className="mt-4"
+                                        >
+                                            <Button
+                                                variant="outlined"
+                                                component="label"
+                                                className="rounded-full!"
+                                            >
+                                                เลือกรูปโลโก้
+                                                <input
+                                                    hidden
+                                                    type="file"
+                                                    accept="image/png,image/jpeg,image/webp"
+                                                    onChange={handleLogoChange}
+                                                />
+                                            </Button>
+                                            {logoUrl ? (
+                                                <Button
+                                                    variant="text"
+                                                    color="error"
+                                                    className="rounded-full!"
+                                                    onClick={() => {
+                                                        setLogoUrl("");
+                                                        setLogoChanged(true);
+                                                    }}
+                                                >
+                                                    ลบโลโก้
+                                                </Button>
+                                            ) : null}
+                                        </Stack>
+                                    </Box>
+                                </Stack>
+                            </Box>
+
+                            <Box className="rounded-[30px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+                                <Stack spacing={2.5}>
+                                    <Box className="overflow-hidden rounded-[28px] bg-white">
+                                        {promoImageUrl ? (
+                                            <Box
+                                                component="img"
+                                                src={promoImageUrl}
+                                                alt="รูปโปรโมชันหน้าร้าน"
+                                                className="h-56 w-full object-cover md:h-72"
+                                            />
+                                        ) : (
+                                            <Box className="grid h-56 place-items-center px-6 text-center text-slate-500 md:h-72">
+                                                ยังไม่มีรูปโปรโมชันหน้าร้าน
+                                            </Box>
+                                        )}
+                                    </Box>
+
+                                    <Box className="grid gap-1">
+                                        <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
+                                            รูปโปรโมชันหน้าร้าน
+                                        </Typography>
+                                        <Typography className="text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
+                                            ใช้เป็นภาพใหญ่หน้าแรกของ URL ร้าน เช่น รูปโปรโมชัน แคมเปญ หรือภาพบรรยากาศร้าน
+                                        </Typography>
+                                    </Box>
+
+                                    <Stack
+                                        direction={{ xs: "column", sm: "row" }}
+                                        spacing={1.25}
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            component="label"
+                                            className="rounded-full!"
+                                        >
+                                            เลือกรูปโปรโมชัน
+                                            <input
+                                                hidden
+                                                type="file"
+                                                accept="image/png,image/jpeg,image/webp"
+                                                onChange={handlePromoImageChange}
+                                            />
+                                        </Button>
+                                        {promoImageUrl ? (
+                                            <Button
+                                                variant="text"
+                                                color="error"
+                                                className="rounded-full!"
+                                                onClick={() => {
+                                                    setPromoImageUrl("");
+                                                    setPromoImageChanged(true);
+                                                }}
+                                            >
+                                                ลบรูปโปรโมชัน
+                                            </Button>
+                                        ) : null}
+                                    </Stack>
+                                </Stack>
+                            </Box>
+
+                            <Box className="grid gap-4">
+                                <TextField
+                                    label="ชื่อร้าน"
+                                    value={shopName}
+                                    onChange={(event) => setShopName(event.target.value)}
+                                    fullWidth
+                                    error={!!shopError}
+                                    helperText={shopError || "เช่น ฟูลแทงค์ พรีเมียม เรนทัล"}
+                                />
+
+                                <TextField
+                                    label="ชื่อโดเมนของร้าน"
+                                    value={domainSlug}
+                                    onChange={(event) =>
+                                        setDomainSlug(normalizeDomainSlug(event.target.value))
+                                    }
+                                    fullWidth
+                                    error={!!domainError}
+                                    helperText={
+                                        domainError ||
+                                        "ใช้ภาษาอังกฤษ ตัวเลข และขีดกลางเท่านั้น เช่น fulltank-garage"
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Typography className="text-sm font-semibold text-slate-500">
+                                                    .{RENTFLOW_ROOT_DOMAIN}
+                                                </Typography>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Box>
+
+                            <Box className="grid gap-3 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
+                                <Typography className="text-[1rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.06rem]">
+                                    ตัวอย่างลิงก์หน้าร้าน
+                                </Typography>
+                                <Typography className="break-all text-[1.3rem] font-black tracking-[-0.045em] text-slate-950 md:text-[1.9rem]">
                                     https://{storefrontDomain}
                                 </Typography>
-                                <Typography className="mt-2 text-sm leading-6 text-slate-500">
-                                    ลูกค้าจะเข้าเว็บเช่ารถของร้านคุณผ่าน URL นี้ ส่วนคุณจัดการร้านที่
-                                    partner.rentflow.com เหมือนเดิม
+                                <Typography className="text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
+                                    ลูกค้าจะเข้าหน้าร้านของคุณผ่านลิงก์นี้
+                                    ส่วนหลังบ้านยังใช้งานผ่าน `partner.rentflow.com` เหมือนเดิม
                                 </Typography>
                             </Box>
 
@@ -272,8 +422,7 @@ export default function StoreSetupPage() {
                                 type="submit"
                                 variant="contained"
                                 disabled={!canSubmit}
-                                endIcon={<ArrowForwardRoundedIcon />}
-                                className="rounded-2xl! py-3! font-bold!"
+                                className="rounded-2xl! py-3.5! font-bold!"
                                 sx={{
                                     bgcolor: "rgb(15 23 42)",
                                     "&:hover": { bgcolor: "rgb(2 6 23)" },
@@ -285,12 +434,119 @@ export default function StoreSetupPage() {
                                         <span>กำลังบันทึก...</span>
                                     </Stack>
                                 ) : (
-                                    "บันทึกและเข้าสู่แดชบอร์ด"
+                                    "บันทึกข้อมูลร้าน"
                                 )}
                             </Button>
                         </Box>
                     </CardContent>
                 </Card>
+
+                <Box className="grid gap-5">
+                    <Card elevation={0} className="partner-card rounded-[34px]!">
+                        <CardContent className="p-5! md:p-7!">
+                            <Box className="grid gap-2">
+                                <Typography className="partner-section-title text-slate-950">
+                                    พรีวิวหน้าร้าน
+                                </Typography>
+                                <Typography className="partner-section-subtitle">
+                                    ตัวอย่างการแสดงผลเบื้องต้นก่อนบันทึกจริง
+                                </Typography>
+                            </Box>
+
+                            <Box className="mt-5 rounded-[32px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+                                <Stack spacing={3}>
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        className="items-center"
+                                    >
+                                        <Box className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-[22px] bg-[var(--rf-partner-blue-deep)] text-xl font-black tracking-[-0.04em] text-white">
+                                            {logoUrl ? (
+                                                <Box
+                                                    component="img"
+                                                    src={logoUrl}
+                                                    alt="โลโก้ร้าน"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                shopName.trim().charAt(0) || "ร"
+                                            )}
+                                        </Box>
+                                        <Box className="min-w-0">
+                                            <Typography className="text-[1.15rem] font-black tracking-[-0.04em] text-slate-950 md:text-[1.35rem]">
+                                                {shopName.trim() || "ชื่อร้านของคุณ"}
+                                            </Typography>
+                                            <Typography className="mt-1 break-all text-[0.92rem] leading-6 text-slate-500 md:text-[0.96rem]">
+                                                https://{storefrontDomain}
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+
+                                    <Divider />
+
+                                    <Box className="grid gap-3">
+                                        {[
+                                            "ชื่อร้านจะแสดงบนหน้าร้านและโปรไฟล์ร้าน",
+                                            "โดเมนร้านจะเป็นลิงก์หลักที่ลูกค้าใช้เข้าชมรถ",
+                                            "คุณสามารถกลับมาแก้ไขข้อมูลส่วนนี้ได้ภายหลัง",
+                                        ].map((item) => (
+                                            <Box
+                                                key={item}
+                                                className="rounded-[24px] border border-slate-200 bg-white px-4 py-4"
+                                            >
+                                                <Typography className="text-[0.95rem] font-semibold leading-7 tracking-[-0.02em] text-slate-700">
+                                                    {item}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Stack>
+                            </Box>
+                        </CardContent>
+                    </Card>
+
+                    <Card elevation={0} className="partner-card rounded-[34px]!">
+                        <CardContent className="p-5! md:p-7!">
+                            <Box className="grid gap-2">
+                                <Typography className="partner-section-title text-slate-950">
+                                    ก่อนกดบันทึก
+                                </Typography>
+                                <Typography className="partner-section-subtitle">
+                                    ตรวจสอบข้อมูลให้เรียบร้อยเพื่อให้ลูกค้าเห็นร้านของคุณถูกต้อง
+                                </Typography>
+                            </Box>
+
+                            <Stack spacing={2.5} className="mt-5">
+                                <Box className="rounded-[26px] border border-slate-200 bg-slate-50 px-4 py-4">
+                                    <Typography className="text-[0.98rem] font-bold tracking-[-0.03em] text-slate-950">
+                                        ชื่อร้าน
+                                    </Typography>
+                                    <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500">
+                                        ควรเป็นชื่อที่ลูกค้าจำได้ง่ายและตรงกับแบรนด์ของร้าน
+                                    </Typography>
+                                </Box>
+
+                                <Box className="rounded-[26px] border border-slate-200 bg-slate-50 px-4 py-4">
+                                    <Typography className="text-[0.98rem] font-bold tracking-[-0.03em] text-slate-950">
+                                        ชื่อโดเมน
+                                    </Typography>
+                                    <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500">
+                                        ใช้ตัวอักษรภาษาอังกฤษ ตัวเลข หรือขีดกลางเท่านั้น
+                                    </Typography>
+                                </Box>
+
+                                <Box className="rounded-[26px] border border-slate-200 bg-slate-50 px-4 py-4">
+                                    <Typography className="text-[0.98rem] font-bold tracking-[-0.03em] text-slate-950">
+                                        โลโก้ร้าน
+                                    </Typography>
+                                    <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500">
+                                        ถ้ายังไม่มีโลโก้ ระบบจะใช้ตัวอักษรแรกของชื่อร้านแสดงแทนชั่วคราว
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Box>
             </Box>
 
             <Snackbar

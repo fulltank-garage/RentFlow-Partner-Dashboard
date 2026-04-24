@@ -12,7 +12,6 @@ import {
   Divider,
   Drawer,
   FormControlLabel,
-  IconButton,
   MenuItem,
   Snackbar,
   Stack,
@@ -20,12 +19,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
-import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { branchesService } from "@/src/services/branches/branches.service";
 import type {
   PartnerBranch,
@@ -96,25 +89,12 @@ function StatusChip({ active }: { active: boolean }) {
   return (
     <Chip
       label={active ? "เปิดใช้งาน" : "ปิดใช้งาน"}
-      variant="outlined"
-      sx={
-        active
-          ? {
-              borderColor: "rgb(167 243 208)",
-              backgroundColor: "rgb(209 250 229)",
-              color: "rgb(6 95 70)",
-            }
-          : {
-              borderColor: "rgb(226 232 240)",
-              backgroundColor: "rgb(248 250 252)",
-              color: "rgb(51 65 85)",
-            }
-      }
+      className={active ? "partner-chip partner-chip-green" : "partner-chip"}
     />
   );
 }
 
-export default function AdminLocationsPage() {
+export default function PartnerLocationsPage() {
   const [branches, setBranches] = React.useState<PartnerBranch[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -287,10 +267,10 @@ export default function AdminLocationsPage() {
         className="items-start justify-between md:items-center"
       >
         <Box>
-          <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+          <Typography variant="h6" className="partner-section-title text-slate-900">
             จุดรับ-ส่ง / สาขา
           </Typography>
-          <Typography className="text-sm text-slate-600">
+          <Typography className="partner-section-subtitle">
             เพิ่ม แก้ไข ลบ และเปิด/ปิดสาขาที่ลูกค้าเลือกตอนจองรถ
           </Typography>
         </Box>
@@ -319,7 +299,6 @@ export default function AdminLocationsPage() {
           </TextField>
           <Button
             variant="contained"
-            startIcon={<AddRoundedIcon />}
             onClick={openCreateDrawer}
             sx={{ bgcolor: "rgb(15 23 42)", borderRadius: 2.5 }}
           >
@@ -328,21 +307,20 @@ export default function AdminLocationsPage() {
         </Stack>
       </Stack>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card elevation={0} className="partner-card rounded-[30px]!">
         <CardContent className="p-0!">
           {loading ? (
             <Box className="grid min-h-72 place-items-center">
               <CircularProgress />
             </Box>
           ) : filteredBranches.length === 0 ? (
-            <Box className="grid min-h-72 place-items-center p-8 text-center">
-              <Stack spacing={1} className="items-center">
-                <PlaceRoundedIcon className="text-slate-400" sx={{ fontSize: 48 }} />
+            <Box className="partner-empty">
+              <Box>
                 <Typography className="font-bold text-slate-900">ยังไม่มีสาขา</Typography>
-                <Typography className="max-w-md text-sm text-slate-500">
+                <Typography className="mt-1 max-w-md text-sm text-slate-500">
                   เพิ่มจุดรับ-ส่งเพื่อให้ลูกค้าเลือกสถานที่รับรถและคืนรถ
                 </Typography>
-              </Stack>
+              </Box>
             </Box>
           ) : (
             <Box>
@@ -354,8 +332,8 @@ export default function AdminLocationsPage() {
                     className="items-start justify-between p-4 md:p-5"
                   >
                     <Stack direction="row" spacing={2} className="min-w-0 flex-1">
-                      <Box className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-slate-950 text-white">
-                        <PlaceRoundedIcon />
+                      <Box className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white">
+                        {branch.name.slice(0, 1)}
                       </Box>
                       <Box className="min-w-0 flex-1">
                         <Stack direction="row" spacing={1} className="flex-wrap items-center">
@@ -365,7 +343,7 @@ export default function AdminLocationsPage() {
                           <StatusChip active={branch.isActive} />
                           <Chip
                             label={branchTypeLabel[branch.type || "storefront"]}
-                            variant="outlined"
+                            className="partner-chip"
                           />
                         </Stack>
                         <Typography className="mt-2 text-lg font-black text-slate-950">
@@ -397,7 +375,6 @@ export default function AdminLocationsPage() {
                           variant="outlined"
                           href={googleMapsUrl(branch)}
                           target="_blank"
-                          startIcon={<OpenInNewRoundedIcon />}
                           className="flex-1 md:flex-none"
                         >
                           แผนที่
@@ -409,7 +386,6 @@ export default function AdminLocationsPage() {
                       <Button
                         variant="outlined"
                         color="error"
-                        startIcon={<DeleteOutlineRoundedIcon />}
                         onClick={() => deleteBranch(branch)}
                         className="flex-1 md:flex-none"
                       >
@@ -436,9 +412,9 @@ export default function AdminLocationsPage() {
                 ข้อมูลสาขาจะใช้ในหน้าจองของลูกค้า
               </Typography>
             </Box>
-            <IconButton onClick={() => setDrawerOpen(false)}>
-              <CloseRoundedIcon />
-            </IconButton>
+            <Button variant="outlined" onClick={() => setDrawerOpen(false)}>
+              ปิด
+            </Button>
           </Stack>
 
           <Box className="flex-1 overflow-auto p-4">
@@ -463,7 +439,7 @@ export default function AdminLocationsPage() {
                 <TextField label="เวลาปิด" type="time" value={form.closeTime || "20:00"} onChange={(e) => updateForm("closeTime", e.target.value)} fullWidth />
               </Stack>
               <TextField label="ค่าบริการเพิ่ม" type="number" value={form.extraFee} onChange={(e) => updateForm("extraFee", Number(e.target.value))} fullWidth />
-              <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+              <Card elevation={0} className="partner-card rounded-[28px]!">
                 <CardContent>
                   <Stack spacing={1}>
                     <FormControlLabel
@@ -491,12 +467,11 @@ export default function AdminLocationsPage() {
             <Button
               fullWidth
               variant="contained"
-              startIcon={saving ? <CircularProgress size={18} /> : <SaveRoundedIcon />}
               disabled={saving}
               onClick={saveBranch}
               sx={{ bgcolor: "rgb(15 23 42)" }}
             >
-              บันทึก
+              {saving ? <CircularProgress size={18} color="inherit" /> : "บันทึก"}
             </Button>
           </Stack>
         </Box>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import DashboardLayout from "../../src/components/admin/DashboardLayout";
+import PartnerDashboardLayout from "../../src/components/admin/PartnerDashboardLayout";
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
-    return <DashboardLayout>{children}</DashboardLayout>;
+export default function PartnerLayout({ children }: { children: ReactNode }) {
+    return <PartnerDashboardLayout>{children}</PartnerDashboardLayout>;
 }

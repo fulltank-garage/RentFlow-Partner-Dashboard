@@ -70,6 +70,154 @@ function bookingStatusLabel(status: string) {
   return labels[status] || status;
 }
 
+function statusLabel(status?: string) {
+  const labels: Record<string, string> = {
+    all: "ทั้งหมด",
+    pending: "รอดำเนินการ",
+    confirmed: "ยืนยันแล้ว",
+    paid: "ชำระแล้ว",
+    completed: "เสร็จสิ้น",
+    cancelled: "ยกเลิก",
+    failed: "ไม่สำเร็จ",
+    refunded: "คืนเงินแล้ว",
+    settled: "ปิดยอดแล้ว",
+    pending_payout: "รอปิดยอด",
+    none: "ไม่มี",
+    active: "เปิดใช้งาน",
+    inactive: "ปิดใช้งาน",
+    verified: "ยืนยันแล้ว",
+    unverified: "รอยืนยัน",
+    draft: "แบบร่าง",
+    open: "กำลังดำเนินการ",
+    waiting: "รอตอบกลับ",
+    resolved: "แก้ไขแล้ว",
+    closed: "ปิดแล้ว",
+    new: "ใหม่",
+    percent: "เปอร์เซ็นต์",
+    amount: "จำนวนเงิน",
+    fixed: "จำนวนเงิน",
+    day: "ต่อวัน",
+    trip: "ต่อทริป",
+    booking: "ต่อการจอง",
+  };
+  return labels[status || ""] || status || "-";
+}
+
+function roleLabel(role?: string) {
+  const labels: Record<string, string> = {
+    owner: "เจ้าของร้าน",
+    finance: "การเงิน",
+    staff: "พนักงาน",
+  };
+  return labels[role || ""] || role || "-";
+}
+
+function paymentMethodLabel(method?: string) {
+  const labels: Record<string, string> = {
+    cash: "เงินสด",
+    bank_transfer: "โอนผ่านธนาคาร",
+    promptpay: "พร้อมเพย์",
+    prompt_pay: "พร้อมเพย์",
+    credit_card: "บัตรเครดิต",
+    slip: "แนบสลิป",
+  };
+  return labels[method || ""] || method || "-";
+}
+
+function auditActionLabel(action?: string) {
+  const labels: Record<string, string> = {
+    "member.create": "เพิ่มสมาชิกทีม",
+    "member.update": "แก้ไขสมาชิกทีม",
+    "member.delete": "ลบสมาชิกทีม",
+    "promotion.create": "เพิ่มโปรโมชัน",
+    "promotion.update": "แก้ไขโปรโมชัน",
+    "promotion.delete": "ลบโปรโมชัน",
+    "addon.create": "เพิ่มบริการเสริม",
+    "addon.update": "แก้ไขบริการเสริม",
+    "addon.delete": "ลบบริการเสริม",
+    "lead.create": "เพิ่มลูกค้าเป้าหมาย",
+    "lead.update": "แก้ไขลูกค้าเป้าหมาย",
+    "lead.delete": "ลบลูกค้าเป้าหมาย",
+    "domain.create": "เพิ่มโดเมน",
+    "domain.verify": "ตรวจสอบโดเมน",
+    "domain.delete": "ลบโดเมน",
+    "booking.update_status": "อัปเดตสถานะการจอง",
+    "payment.verify": "ยืนยันการชำระเงิน",
+    "payment.refund": "คืนเงิน",
+    "payment.settle": "ปิดยอดเข้าร้าน",
+  };
+  return labels[action || ""] || "รายการเปลี่ยนแปลง";
+}
+
+function fieldLabel(field: string) {
+  const labels: Record<string, string> = {
+    code: "รหัส",
+    name: "ชื่อ",
+    description: "รายละเอียด",
+    discountType: "รูปแบบส่วนลด",
+    discountValue: "มูลค่าส่วนลด",
+    price: "ราคา",
+    unit: "หน่วยคิดราคา",
+    email: "อีเมล",
+    phone: "เบอร์โทร",
+    source: "ช่องทางที่มา",
+    status: "สถานะ",
+    interestedCar: "รถที่สนใจ",
+    note: "หมายเหตุ",
+  };
+  return labels[field] || field;
+}
+
+function fieldOptions(field: string) {
+  const options: Record<string, Array<{ value: string; label: string }>> = {
+    discountType: [
+      { value: "percent", label: "เปอร์เซ็นต์" },
+      { value: "amount", label: "จำนวนเงิน" },
+    ],
+    unit: [
+      { value: "day", label: "ต่อวัน" },
+      { value: "trip", label: "ต่อทริป" },
+      { value: "booking", label: "ต่อการจอง" },
+    ],
+    status: [
+      { value: "new", label: "ใหม่" },
+      { value: "open", label: "กำลังดำเนินการ" },
+      { value: "waiting", label: "รอตอบกลับ" },
+      { value: "resolved", label: "แก้ไขแล้ว" },
+      { value: "closed", label: "ปิดแล้ว" },
+    ],
+  };
+  return options[field] || null;
+}
+
+function statusChipClass(status?: string) {
+  const normalized = (status || "").toLowerCase();
+  if (
+    ["paid", "completed", "active", "verified", "settled", "resolved"].includes(
+      normalized
+    ) ||
+    ["ชำระแล้ว", "เสร็จสิ้น", "เปิดใช้งาน", "ยืนยันแล้ว", "แก้ไขแล้ว"].includes(status || "")
+  ) {
+    return "partner-chip partner-chip-green";
+  }
+  if (
+    ["cancelled", "failed", "refunded", "closed", "inactive"].includes(normalized) ||
+    ["ยกเลิก", "ไม่สำเร็จ", "คืนเงินแล้ว", "ปิดแล้ว", "ปิดใช้งาน"].includes(status || "")
+  ) {
+    return "partner-chip partner-chip-rose";
+  }
+  if (
+    ["pending", "waiting", "draft", "pending_payout", "new"].includes(normalized) ||
+    ["รอดำเนินการ", "รอตอบกลับ", "แบบร่าง", "รอปิดยอด", "ใหม่"].includes(status || "")
+  ) {
+    return "partner-chip partner-chip-orange";
+  }
+  if (["confirmed", "open"].includes(normalized) || ["กำลังดำเนินการ"].includes(status || "")) {
+    return "partner-chip partner-chip-blue";
+  }
+  return "partner-chip";
+}
+
 function SectionHeader({
   title,
   description,
@@ -86,10 +234,10 @@ function SectionHeader({
       className="items-start justify-between md:items-center"
     >
       <Box>
-        <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+        <Typography variant="h6" className="partner-section-title">
           {title}
         </Typography>
-        <Typography className="text-sm text-slate-600">{description}</Typography>
+        <Typography className="partner-section-subtitle">{description}</Typography>
       </Box>
       {action}
     </Stack>
@@ -98,7 +246,7 @@ function SectionHeader({
 
 function LoadingCard() {
   return (
-    <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+    <Card elevation={0} className="partner-card rounded-[30px]!">
       <CardContent className="grid min-h-72 place-items-center">
         <CircularProgress />
       </CardContent>
@@ -108,7 +256,7 @@ function LoadingCard() {
 
 function EmptyState({ label }: { label: string }) {
   return (
-    <Box className="grid min-h-56 place-items-center text-center">
+    <Box className="partner-empty min-h-56">
       <Typography className="text-sm font-semibold text-slate-500">{label}</Typography>
     </Box>
   );
@@ -181,7 +329,7 @@ export function PartnerBookingsPage() {
     <Box className="grid gap-4">
       <SectionHeader
         title="การจอง"
-        description="ดูและจัดการสถานะการจองของร้านจาก API จริง"
+        description="ดูและจัดการสถานะการจองของร้านในที่เดียว"
         action={
           <TextField select size="small" label="สถานะ" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full md:w-48">
             <MenuItem value="all">ทั้งหมด</MenuItem>
@@ -194,7 +342,7 @@ export function PartnerBookingsPage() {
         }
       />
       {loading ? <LoadingCard /> : (
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+        <Card elevation={0} className="partner-card rounded-[30px]!">
           <CardContent className="p-0!">
             {items.length === 0 ? <EmptyState label="ยังไม่มีการจอง" /> : items.map((booking, index) => (
               <Box key={booking.id}>
@@ -206,7 +354,10 @@ export function PartnerBookingsPage() {
                     <Typography className="mt-1 font-bold text-slate-900">{formatTHB(booking.totalAmount)}</Typography>
                   </Box>
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="w-full md:w-auto">
-                    <Chip label={bookingStatusLabel(booking.status)} variant="outlined" />
+                    <Chip
+                      label={bookingStatusLabel(booking.status)}
+                      className={statusChipClass(booking.status)}
+                    />
                     <TextField select size="small" label="เปลี่ยนสถานะ" defaultValue={booking.status} onChange={(e) => updateStatus(booking, e.target.value)} className="w-full sm:w-44">
                       <MenuItem value="pending">รอดำเนินการ</MenuItem>
                       <MenuItem value="confirmed">ยืนยันแล้ว</MenuItem>
@@ -262,19 +413,34 @@ export function PartnerPaymentsPage({ verificationOnly = false }: { verification
     <Box className="grid gap-4">
       <SectionHeader title={verificationOnly ? "ตรวจสอบการชำระเงิน" : "การชำระเงิน"} description="จัดการตรวจสลิป คืนเงิน และปิดยอดเข้าร้าน" />
       {loading ? <LoadingCard /> : (
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+        <Card elevation={0} className="partner-card rounded-[30px]!">
           <CardContent className="p-0!">
             {items.length === 0 ? <EmptyState label="ยังไม่มีรายการชำระเงิน" /> : items.map((payment, index) => (
               <Box key={payment.id}>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2} className="items-start justify-between p-4">
                   <Box>
                     <Typography className="font-black text-slate-950">{payment.bookingCode || payment.bookingId} • {payment.customerName || "-"}</Typography>
-                    <Typography className="text-sm text-slate-600">{payment.method} • {payment.transactionId || "-"}</Typography>
+                    <Typography className="text-sm text-slate-600">
+                      {paymentMethodLabel(payment.method)} • {payment.transactionId || "-"}
+                    </Typography>
                     <Typography className="mt-1 font-bold text-slate-900">{formatTHB(payment.amount)}</Typography>
-                    <Typography className="text-xs text-slate-500">สถานะจ่าย: {payment.status} • payout: {payment.payoutStatus || "pending"} • refund: {payment.refundStatus || "none"}</Typography>
+                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" className="mt-2">
+                      <Chip
+                        label={`ชำระเงิน: ${statusLabel(payment.status)}`}
+                        className={statusChipClass(payment.status)}
+                      />
+                      <Chip
+                        label={`ปิดยอด: ${statusLabel(payment.payoutStatus || "pending_payout")}`}
+                        className={statusChipClass(payment.payoutStatus || "pending_payout")}
+                      />
+                      <Chip
+                        label={`คืนเงิน: ${statusLabel(payment.refundStatus || "none")}`}
+                        className={statusChipClass(payment.refundStatus || "none")}
+                      />
+                    </Stack>
                   </Box>
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="w-full md:w-auto">
-                    <Button variant="outlined" onClick={() => runAction(() => paymentsService.verifyPayment(payment.id, payment.slipUrl), "ยืนยันชำระเงินแล้ว")}>ยืนยัน</Button>
+                    <Button variant="outlined" onClick={() => runAction(() => paymentsService.verifyPayment(payment.id), "ยืนยันชำระเงินแล้ว")}>ยืนยัน</Button>
                     <Button variant="outlined" onClick={() => runAction(() => paymentsService.settlePayment(payment.id), "ปิดยอดเข้าร้านแล้ว")}>ปิดยอด</Button>
                     <Button color="error" variant="outlined" onClick={() => runAction(() => paymentsService.refundPayment(payment.id, payment.amount), "คืนเงินแล้ว")}>คืนเงิน</Button>
                   </Stack>
@@ -301,7 +467,7 @@ export function PartnerCustomersPage() {
     <Box className="grid gap-4">
       <SectionHeader title="ลูกค้า" description="รวมลูกค้าจากประวัติการจองจริงของร้าน" />
       {loading ? <LoadingCard /> : (
-        <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+        <Card elevation={0} className="partner-card rounded-[30px]!">
           <CardContent className="p-0!">
             {items.length === 0 ? <EmptyState label="ยังไม่มีลูกค้า" /> : items.map((customer, index) => (
               <Box key={`${customer.email}-${customer.phone}`}>
@@ -334,7 +500,7 @@ export function PartnerReportsPage() {
   if (loading) return <LoadingCard />;
   return (
     <Box className="grid gap-4">
-      <SectionHeader title="รายงาน" description="สรุปยอดขาย การจอง รถ สาขา และรีวิวจาก API จริง" />
+      <SectionHeader title="รายงาน" description="สรุปยอดขาย การจอง รถ สาขา และรีวิวของร้าน" />
       {report ? (
         <Box className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Metric label="รถทั้งหมด" value={report.summary.totalCars} detail={`พร้อมให้เช่า ${report.summary.availableCars}`} />
@@ -350,7 +516,7 @@ export function PartnerReportsPage() {
 
 function Metric({ label, value, detail }: { label: string; value: React.ReactNode; detail: string }) {
   return (
-    <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+    <Card elevation={0} className="partner-card rounded-[30px]!">
       <CardContent>
         <Typography className="text-sm text-slate-500">{label}</Typography>
         <Typography className="mt-2 text-2xl font-black text-slate-950">{value}</Typography>
@@ -392,8 +558,8 @@ export function PartnerCalendarPage() {
   }
   return (
     <Box className="grid gap-4">
-      <SectionHeader title="ปฏิทิน" description="ดูตารางจองและ block วันไม่ว่างของร้าน" />
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <SectionHeader title="ปฏิทิน" description="ดูตารางจองและปิดช่วงวันที่ร้านไม่ว่าง" />
+      <Card elevation={0} className="partner-card rounded-[30px]!">
         <CardContent>
           <Typography className="mb-3 font-black text-slate-950">เพิ่มวันปิดรับจอง</Typography>
           <Stack direction={{ xs: "column", md: "row" }} spacing={1.5}>
@@ -417,10 +583,10 @@ export function PartnerCalendarPage() {
 
 function ListCard({ title, empty, items }: { title: string; empty: string; items: Array<{ id: string; title: string; subtitle?: string; right?: string; onClick?: () => void | Promise<void> }> }) {
   return (
-    <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+    <Card elevation={0} className="partner-card rounded-[30px]!">
       <CardContent>
         <Typography className="font-black text-slate-950">{title}</Typography>
-        {items.length === 0 ? <EmptyState label={empty} /> : <Stack divider={<Divider />} className="mt-3">{items.map((item) => <Stack key={item.id} direction="row" className="justify-between py-3" spacing={2}><Box><Typography className="font-bold text-slate-950">{item.title}</Typography><Typography className="text-sm text-slate-500">{item.subtitle}</Typography></Box>{item.right ? <Button size="small" onClick={item.onClick}>{item.right}</Button> : null}</Stack>)}</Stack>}
+        {items.length === 0 ? <EmptyState label={empty} /> : <Stack divider={<Divider />} className="mt-3">{items.map((item) => <Stack key={item.id} direction={{ xs: "column", sm: "row" }} className="justify-between py-3" spacing={2}><Box><Typography className="font-bold text-slate-950">{item.title}</Typography><Typography className="text-sm text-slate-500">{item.subtitle}</Typography></Box>{item.right ? (item.onClick ? <Button size="small" onClick={item.onClick}>{item.right}</Button> : <Chip label={item.right} className={statusChipClass(item.right)} />) : null}</Stack>)}</Stack>}
       </CardContent>
     </Card>
   );
@@ -483,8 +649,68 @@ function CrudPage<T extends CrudBase>({
   return (
     <Box className="grid gap-4">
       <SectionHeader title={title} description={description} />
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white"><CardContent><Stack direction={{ xs: "column", md: "row" }} spacing={1.5}>{fields.map((field) => <TextField key={String(field)} label={String(field)} value={String(form[field] ?? "")} onChange={(e) => setForm((prev) => ({ ...prev, [field]: isNaN(Number(e.target.value)) || e.target.value === "" ? e.target.value : Number(e.target.value) }))} fullWidth />)}<Button variant="contained" onClick={save} sx={{ bgcolor: "rgb(15 23 42)" }}>{editingId ? "บันทึก" : "เพิ่ม"}</Button></Stack></CardContent></Card>
-      {loading ? <LoadingCard /> : <ListCard title={title} empty="ยังไม่มีข้อมูล" items={items.map((item) => ({ id: item.id, title: item.name || item.code || item.id, subtitle: item.isActive === false ? "ปิดใช้งาน" : "เปิดใช้งาน", right: "แก้ไข/ลบ", onClick: async () => { if (window.confirm("กด OK เพื่อลบ หรือ Cancel เพื่อแก้ไข")) { await remove(item.id); reload(); } else { setEditingId(item.id); setForm(item as unknown as Omit<T, "id" | "createdAt">); } } }))} />}
+      <Card elevation={0} className="partner-card rounded-[30px]!">
+        <CardContent className="p-5!">
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5}>
+            {fields.map((field) => (
+              (() => {
+                const key = String(field);
+                const options = fieldOptions(key);
+                return (
+                  <TextField
+                    key={key}
+                    select={Boolean(options)}
+                    label={fieldLabel(key)}
+                    value={String(form[field] ?? "")}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field]:
+                          isNaN(Number(e.target.value)) || e.target.value === ""
+                            ? e.target.value
+                            : Number(e.target.value),
+                      }))
+                    }
+                    fullWidth
+                  >
+                    {options?.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                );
+              })()
+            ))}
+            <Button variant="contained" onClick={save}>
+              {editingId ? "บันทึก" : "เพิ่ม"}
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
+      {loading ? (
+        <LoadingCard />
+      ) : (
+        <ListCard
+          title={title}
+          empty="ยังไม่มีข้อมูล"
+          items={items.map((item) => ({
+            id: item.id,
+            title: item.name || item.code || item.id,
+            subtitle: item.isActive === false ? "ปิดใช้งาน" : "เปิดใช้งาน",
+            right: "จัดการ",
+            onClick: async () => {
+              if (window.confirm("ต้องการลบรายการนี้ใช่หรือไม่ หากไม่ต้องการลบให้กดยกเลิกเพื่อแก้ไข")) {
+                await remove(item.id);
+                reload();
+              } else {
+                setEditingId(item.id);
+                setForm(item as unknown as Omit<T, "id" | "createdAt">);
+              }
+            },
+          }))}
+        />
+      )}
       <PageSnack snack={snack} onClose={close} />
     </Box>
   );
@@ -525,12 +751,105 @@ export function PartnerSettingsProductionPage() {
   }
   return (
     <Box className="grid gap-4">
-      <SectionHeader title="ตั้งค่าระบบร้าน" description="จัดการ custom domain, team roles และ audit log" />
+      <SectionHeader
+        title="ตั้งค่าระบบร้าน"
+        description="จัดการโดเมนของร้าน ทีมงาน และประวัติการเปลี่ยนแปลง"
+      />
       {loading ? <LoadingCard /> : (
         <Box className="grid gap-4 xl:grid-cols-3">
-          <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white"><CardContent><Typography className="font-black">Custom domains</Typography><Stack direction="row" spacing={1} className="my-3"><TextField label="domain.com" value={domain} onChange={(e) => setDomain(e.target.value)} fullWidth /><Button onClick={addDomain}>เพิ่ม</Button></Stack><Stack divider={<Divider />}>{domains.map((item) => <Box key={item.id} className="py-2"><Typography className="font-bold">{item.domain}</Typography><Typography className="text-xs text-slate-500">{item.status} • TXT: {item.verificationTxt}</Typography><Button size="small" onClick={() => domainsService.verifyDomain(item.id).then(load)}>ยืนยัน</Button></Box>)}</Stack></CardContent></Card>
-          <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white"><CardContent><Typography className="font-black">ทีมและสิทธิ์</Typography><Stack direction="row" spacing={1} className="my-3"><TextField label="อีเมล" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} fullWidth /><TextField select label="Role" value={memberRole} onChange={(e) => setMemberRole(e.target.value as PartnerMember["role"])}><MenuItem value="staff">staff</MenuItem><MenuItem value="finance">finance</MenuItem><MenuItem value="owner">owner</MenuItem></TextField><Button onClick={addMember}>เพิ่ม</Button></Stack><Stack divider={<Divider />}>{members.map((item) => <Box key={item.id} className="py-2"><Typography className="font-bold">{item.email}</Typography><Typography className="text-xs text-slate-500">{item.role} • {item.status}</Typography></Box>)}</Stack></CardContent></Card>
-          <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white"><CardContent><Typography className="font-black">Audit logs</Typography><Stack divider={<Divider />} className="mt-3">{logs.map((item) => <Box key={item.id} className="py-2"><Typography className="font-bold">{item.action}</Typography><Typography className="text-xs text-slate-500">{item.actorEmail || "-"} • {formatDate(item.createdAt)}</Typography></Box>)}</Stack></CardContent></Card>
+          <Card elevation={0} className="partner-card rounded-[30px]!">
+            <CardContent className="p-5!">
+              <Typography className="partner-section-title">โดเมนเพิ่มเติม</Typography>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="my-4">
+                <TextField
+                  label="ชื่อโดเมน"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  fullWidth
+                />
+                <Button onClick={addDomain}>เพิ่ม</Button>
+              </Stack>
+              <Stack divider={<Divider />}>
+                {domains.map((item) => (
+                  <Box key={item.id} className="py-3">
+                    <Stack spacing={1}>
+                      <Typography className="font-bold text-slate-950">{item.domain}</Typography>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                        <Chip
+                          label={statusLabel(item.status)}
+                          className={statusChipClass(item.status)}
+                        />
+                        {item.verificationTxt ? (
+                          <Chip
+                            label={`รหัสยืนยัน: ${item.verificationTxt}`}
+                            className="partner-chip"
+                          />
+                        ) : null}
+                      </Stack>
+                      <Button size="small" onClick={() => domainsService.verifyDomain(item.id).then(load)}>
+                        ตรวจสอบโดเมน
+                      </Button>
+                    </Stack>
+                  </Box>
+                ))}
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card elevation={0} className="partner-card rounded-[30px]!">
+            <CardContent className="p-5!">
+              <Typography className="partner-section-title">ทีมและสิทธิ์</Typography>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="my-4">
+                <TextField
+                  label="อีเมล"
+                  value={memberEmail}
+                  onChange={(e) => setMemberEmail(e.target.value)}
+                  fullWidth
+                />
+                <TextField
+                  select
+                  label="สิทธิ์"
+                  value={memberRole}
+                  onChange={(e) => setMemberRole(e.target.value as PartnerMember["role"])}
+                  className="sm:min-w-36"
+                >
+                  <MenuItem value="staff">พนักงาน</MenuItem>
+                  <MenuItem value="finance">การเงิน</MenuItem>
+                  <MenuItem value="owner">เจ้าของร้าน</MenuItem>
+                </TextField>
+                <Button onClick={addMember}>เพิ่ม</Button>
+              </Stack>
+              <Stack divider={<Divider />}>
+                {members.map((item) => (
+                  <Box key={item.id} className="py-3">
+                    <Typography className="font-bold text-slate-950">{item.email}</Typography>
+                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" className="mt-2">
+                      <Chip label={roleLabel(item.role)} className="partner-chip partner-chip-blue" />
+                      <Chip label={statusLabel(item.status)} className={statusChipClass(item.status)} />
+                    </Stack>
+                  </Box>
+                ))}
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card elevation={0} className="partner-card rounded-[30px]!">
+            <CardContent className="p-5!">
+              <Typography className="partner-section-title">ประวัติการเปลี่ยนแปลง</Typography>
+              <Stack divider={<Divider />} className="mt-3">
+                {logs.map((item) => (
+                  <Box key={item.id} className="py-3">
+                    <Typography className="font-bold text-slate-950">
+                      {auditActionLabel(item.action)}
+                    </Typography>
+                    <Typography className="text-xs text-slate-500">
+                      {item.actorEmail || "ไม่ระบุผู้ทำรายการ"} • {formatDate(item.createdAt)}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </CardContent>
+          </Card>
         </Box>
       )}
       <PageSnack snack={snack} onClose={close} />

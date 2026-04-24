@@ -1,5 +1,5 @@
 {
-  "name": "rentflow-admin-dashboard",
+  "name": "rentflow-partner-dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,6 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
     "@mui/material-nextjs": "^7.3.8",
     "next": "16.1.6",

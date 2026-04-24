@@ -1,3 +1,5 @@
+import { resolvePartnerAssetUrl } from "@/src/services/core/api-client.service";
+
 export const PARTNER_STORE_KEY = "rentflow_partner_store";
 export const PARTNER_STORE_COOKIE = "rf_store_domain";
 export const RENTFLOW_ROOT_DOMAIN =
@@ -26,6 +28,8 @@ export type PartnerStoreProfile = {
     ownerEmail?: string;
     status?: string;
     plan?: string;
+    logoUrl?: string;
+    promoImageUrl?: string;
     createdAt: string;
     updatedAt: string;
 };
@@ -70,7 +74,12 @@ export function readStoreProfile() {
     if (!raw) return null;
 
     try {
-        return JSON.parse(raw) as PartnerStoreProfile;
+        const parsed = JSON.parse(raw) as PartnerStoreProfile;
+        return {
+            ...parsed,
+            logoUrl: resolvePartnerAssetUrl(parsed.logoUrl),
+            promoImageUrl: resolvePartnerAssetUrl(parsed.promoImageUrl),
+        };
     } catch {
         return null;
     }
@@ -84,6 +93,8 @@ export function writeStoreProfile(input: {
     ownerEmail?: string;
     status?: string;
     plan?: string;
+    logoUrl?: string | null;
+    promoImageUrl?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }) {
@@ -98,6 +109,16 @@ export function writeStoreProfile(input: {
         ownerEmail: input.ownerEmail,
         status: input.status,
         plan: input.plan,
+        logoUrl: resolvePartnerAssetUrl(
+            input.logoUrl === undefined
+                ? existing?.logoUrl
+                : input.logoUrl || undefined
+        ),
+        promoImageUrl: resolvePartnerAssetUrl(
+            input.promoImageUrl === undefined
+                ? existing?.promoImageUrl
+                : input.promoImageUrl || undefined
+        ),
         createdAt: input.createdAt ?? existing?.createdAt ?? now,
         updatedAt: input.updatedAt ?? now,
     };

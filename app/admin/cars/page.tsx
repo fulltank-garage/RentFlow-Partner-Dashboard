@@ -11,19 +11,12 @@ import {
   CircularProgress,
   Divider,
   Drawer,
-  IconButton,
   MenuItem,
   Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
-import DirectionsCarRoundedIcon from "@mui/icons-material/DirectionsCarRounded";
-import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
-import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { branchesService } from "@/src/services/branches/branches.service";
 import type { PartnerBranch } from "@/src/services/branches/branches.types";
 import { carsService } from "@/src/services/cars/cars.service";
@@ -52,40 +45,43 @@ const emptyForm: CarForm = {
 
 const statusMeta: Record<
   PartnerCarStatus,
-  { label: string; sx: Record<string, string> }
+  { label: string; className: string }
 > = {
   available: {
     label: "พร้อมให้เช่า",
-    sx: {
-      borderColor: "rgb(167 243 208)",
-      backgroundColor: "rgb(209 250 229)",
-      color: "rgb(6 95 70)",
-    },
+    className: "partner-chip partner-chip-green",
   },
   rented: {
     label: "ถูกเช่าอยู่",
-    sx: {
-      borderColor: "rgb(253 230 138)",
-      backgroundColor: "rgb(254 243 199)",
-      color: "rgb(146 64 14)",
-    },
+    className: "partner-chip partner-chip-orange",
   },
   maintenance: {
     label: "ซ่อมบำรุง",
-    sx: {
-      borderColor: "rgb(254 202 202)",
-      backgroundColor: "rgb(254 226 226)",
-      color: "rgb(153 27 27)",
-    },
+    className: "partner-chip partner-chip-rose",
   },
   hidden: {
     label: "ซ่อน",
-    sx: {
-      borderColor: "rgb(226 232 240)",
-      backgroundColor: "rgb(248 250 252)",
-      color: "rgb(51 65 85)",
-    },
+    className: "partner-chip",
   },
+};
+
+const carTypeLabel: Record<string, string> = {
+  Economy: "ประหยัด",
+  Sedan: "ซีดาน",
+  SUV: "เอสยูวี",
+  Van: "รถตู้",
+};
+
+const transmissionLabel: Record<string, string> = {
+  Auto: "อัตโนมัติ",
+  Manual: "ธรรมดา",
+};
+
+const fuelLabel: Record<string, string> = {
+  Gasoline: "เบนซิน",
+  Hybrid: "ไฮบริด",
+  EV: "ไฟฟ้า",
+  Diesel: "ดีเซล",
 };
 
 function formatTHB(value: number) {
@@ -132,10 +128,10 @@ function imageIdFromUrl(value: string) {
 
 function StatusChip({ status }: { status: PartnerCarStatus }) {
   const meta = statusMeta[status] || statusMeta.available;
-  return <Chip label={meta.label} variant="outlined" sx={meta.sx} />;
+  return <Chip label={meta.label} className={meta.className} />;
 }
 
-export default function AdminCarsPage() {
+export default function PartnerCarsPage() {
   const [cars, setCars] = React.useState<PartnerCar[]>([]);
   const [branches, setBranches] = React.useState<PartnerBranch[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -338,10 +334,10 @@ export default function AdminCarsPage() {
         className="items-start justify-between md:items-center"
       >
         <Box>
-          <Typography variant="h6" className="text-xl font-extrabold text-slate-900">
+          <Typography variant="h6" className="partner-section-title text-slate-900">
             รถของร้าน
           </Typography>
-          <Typography className="text-sm text-slate-600">
+          <Typography className="partner-section-subtitle">
             เพิ่ม แก้ไข ลบรถ และจัดการรูปภาพที่แสดงบนหน้าร้าน
           </Typography>
         </Box>
@@ -372,7 +368,6 @@ export default function AdminCarsPage() {
           </TextField>
           <Button
             variant="contained"
-            startIcon={<AddRoundedIcon />}
             onClick={openCreateDrawer}
             sx={{ bgcolor: "rgb(15 23 42)", borderRadius: 2.5 }}
           >
@@ -381,21 +376,20 @@ export default function AdminCarsPage() {
         </Stack>
       </Stack>
 
-      <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+      <Card elevation={0} className="partner-card rounded-[30px]!">
         <CardContent className="p-0!">
           {loading ? (
             <Box className="grid min-h-72 place-items-center">
               <CircularProgress />
             </Box>
           ) : filteredCars.length === 0 ? (
-            <Box className="grid min-h-72 place-items-center p-8 text-center">
-              <Stack spacing={1} className="items-center">
-                <DirectionsCarRoundedIcon className="text-slate-400" sx={{ fontSize: 48 }} />
+            <Box className="partner-empty">
+              <Box>
                 <Typography className="font-bold text-slate-900">ยังไม่มีรถ</Typography>
-                <Typography className="max-w-md text-sm text-slate-500">
+                <Typography className="mt-1 max-w-md text-sm text-slate-500">
                   เพิ่มรถคันแรกเพื่อให้ลูกค้าเห็นบนหน้าร้านของคุณ
                 </Typography>
-              </Stack>
+              </Box>
             </Box>
           ) : (
             <Box>
@@ -416,7 +410,9 @@ export default function AdminCarsPage() {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <DirectionsCarRoundedIcon className="text-slate-400" sx={{ fontSize: 44 }} />
+                          <Typography className="text-sm font-bold text-slate-400">
+                            ไม่มีรูป
+                          </Typography>
                         )}
                       </Box>
                       <Box className="min-w-0 flex-1">
@@ -430,10 +426,10 @@ export default function AdminCarsPage() {
                           {car.name}
                         </Typography>
                         <Typography className="mt-1 text-sm text-slate-600">
-                          {car.brand} {car.model} • {car.year} • {car.type}
+                          {car.brand} {car.model} • {car.year} • {carTypeLabel[car.type] || car.type}
                         </Typography>
                         <Typography className="mt-1 text-sm text-slate-600">
-                          {car.seats} ที่นั่ง • {car.transmission} • {car.fuel}
+                          {car.seats} ที่นั่ง • {transmissionLabel[car.transmission] || car.transmission} • {fuelLabel[car.fuel] || car.fuel}
                         </Typography>
                         <Typography className="mt-3 text-xl font-black text-slate-950">
                           {formatTHB(car.pricePerDay)} / วัน
@@ -451,7 +447,6 @@ export default function AdminCarsPage() {
                       <Button
                         variant="outlined"
                         color="error"
-                        startIcon={<DeleteOutlineRoundedIcon />}
                         onClick={() => deleteCar(car)}
                         className="flex-1 md:flex-none"
                       >
@@ -478,9 +473,9 @@ export default function AdminCarsPage() {
                 ข้อมูลนี้จะแสดงบนหน้าร้านของคุณทันที
               </Typography>
             </Box>
-            <IconButton onClick={() => setDrawerOpen(false)}>
-              <CloseRoundedIcon />
-            </IconButton>
+            <Button variant="outlined" onClick={() => setDrawerOpen(false)}>
+              ปิด
+            </Button>
           </Stack>
 
           <Box className="flex-1 overflow-auto p-4">
@@ -496,23 +491,23 @@ export default function AdminCarsPage() {
               </Stack>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <TextField select label="ประเภทรถ" value={form.type} onChange={(e) => updateForm("type", e.target.value)} fullWidth>
-                  <MenuItem value="Economy">Economy</MenuItem>
-                  <MenuItem value="Sedan">Sedan</MenuItem>
-                  <MenuItem value="SUV">SUV</MenuItem>
-                  <MenuItem value="Van">Van</MenuItem>
+                  <MenuItem value="Economy">ประหยัด</MenuItem>
+                  <MenuItem value="Sedan">ซีดาน</MenuItem>
+                  <MenuItem value="SUV">เอสยูวี</MenuItem>
+                  <MenuItem value="Van">รถตู้</MenuItem>
                 </TextField>
                 <TextField label="จำนวนที่นั่ง" type="number" value={form.seats} onChange={(e) => updateForm("seats", Number(e.target.value))} fullWidth />
               </Stack>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <TextField select label="เกียร์" value={form.transmission} onChange={(e) => updateForm("transmission", e.target.value)} fullWidth>
-                  <MenuItem value="Auto">Auto</MenuItem>
-                  <MenuItem value="Manual">Manual</MenuItem>
+                  <MenuItem value="Auto">อัตโนมัติ</MenuItem>
+                  <MenuItem value="Manual">ธรรมดา</MenuItem>
                 </TextField>
                 <TextField select label="เชื้อเพลิง" value={form.fuel} onChange={(e) => updateForm("fuel", e.target.value)} fullWidth>
-                  <MenuItem value="Gasoline">Gasoline</MenuItem>
-                  <MenuItem value="Hybrid">Hybrid</MenuItem>
-                  <MenuItem value="EV">EV</MenuItem>
-                  <MenuItem value="Diesel">Diesel</MenuItem>
+                  <MenuItem value="Gasoline">เบนซิน</MenuItem>
+                  <MenuItem value="Hybrid">ไฮบริด</MenuItem>
+                  <MenuItem value="EV">ไฟฟ้า</MenuItem>
+                  <MenuItem value="Diesel">ดีเซล</MenuItem>
                 </TextField>
               </Stack>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -540,15 +535,12 @@ export default function AdminCarsPage() {
                 fullWidth
               />
 
-              <Card elevation={0} className="rounded-2xl! border border-slate-200 bg-white">
+              <Card elevation={0} className="partner-card rounded-[28px]!">
                 <CardContent>
                   <Stack spacing={1.5}>
-                    <Stack direction="row" spacing={1} className="items-center">
-                      <ImageRoundedIcon className="text-slate-500" />
-                      <Typography className="font-bold text-slate-900">
-                        รูปภาพรถ
-                      </Typography>
-                    </Stack>
+                    <Typography className="font-bold text-slate-900">
+                      รูปภาพรถ
+                    </Typography>
                     {selectedCar?.imageUrl ? (
                       <Box component="img" src={selectedCar.imageUrl} alt={selectedCar.name} className="h-44 w-full rounded-2xl object-cover" />
                     ) : null}
@@ -602,7 +594,7 @@ export default function AdminCarsPage() {
                     <Typography className="text-xs text-slate-500">
                       {imageFiles.length
                         ? `เลือกแล้ว ${imageFiles.length} รูป ระบบจะแทนที่รูปเดิมหลังบันทึก`
-                        : "รองรับ JPG, PNG, WEBP และ GIF"}
+                        : "รองรับไฟล์รูปภาพทั่วไป"}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -617,12 +609,11 @@ export default function AdminCarsPage() {
             <Button
               fullWidth
               variant="contained"
-              startIcon={saving ? <CircularProgress size={18} /> : <SaveRoundedIcon />}
               disabled={saving}
               onClick={saveCar}
               sx={{ bgcolor: "rgb(15 23 42)" }}
             >
-              บันทึก
+              {saving ? <CircularProgress size={18} color="inherit" /> : "บันทึก"}
             </Button>
           </Stack>
         </Box>
