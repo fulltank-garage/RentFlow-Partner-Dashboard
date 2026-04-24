@@ -86,6 +86,8 @@ export default function Login() {
           ownerEmail: tenant.ownerEmail,
           status: tenant.status,
           plan: tenant.plan,
+          logoUrl: tenant.logoUrl,
+          promoImageUrl: tenant.promoImageUrl,
           createdAt: tenant.createdAt,
           updatedAt: tenant.updatedAt,
         });

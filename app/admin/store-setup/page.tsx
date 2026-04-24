@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import {
     Alert,
     Box,
@@ -28,7 +27,6 @@ import { RentFlowApiError } from "@/src/services/core/api-client.service";
 import { tenantService } from "@/src/services/tenant/tenant.service";
 
 export default function StoreSetupPage() {
-    const router = useRouter();
     const [shopName, setShopName] = React.useState("");
     const [domainSlug, setDomainSlug] = React.useState("");
     const [logoUrl, setLogoUrl] = React.useState("");
@@ -202,10 +200,12 @@ export default function StoreSetupPage() {
                 createdAt: tenant.createdAt,
                 updatedAt: tenant.updatedAt,
             });
-
-            const params = new URLSearchParams(window.location.search);
-            const next = params.get("next") || "/admin/dashboard";
-            router.replace(next.startsWith("/admin") ? next : "/admin/dashboard");
+            setLogoUrl(tenant.logoUrl ?? (currentLogoUrl || ""));
+            setPromoImageUrl(tenant.promoImageUrl ?? (currentPromoImageUrl || ""));
+            setLogoChanged(false);
+            setPromoImageChanged(false);
+            setSnackbarMessage("บันทึกข้อมูลร้านเรียบร้อยแล้ว");
+            setSnackbarOpen(true);
         } catch (error: unknown) {
             setSnackbarMessage(
                 error instanceof Error
