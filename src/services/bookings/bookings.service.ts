@@ -1,5 +1,5 @@
 import { requestPartner } from "../core/api-client.service";
-import type { PartnerBooking } from "./bookings.types";
+import type { PartnerBooking, PartnerBookingOperation } from "./bookings.types";
 
 export const bookingsService = {
   getBookings(status?: string) {
@@ -18,5 +18,33 @@ export const bookingsService = {
         body: JSON.stringify({ status, note }),
       }
     );
+  },
+
+  getBookingOperations(bookingId: string) {
+    return requestPartner<{ items: PartnerBookingOperation[]; total: number }>(
+      `/partner/bookings/${encodeURIComponent(bookingId)}/operations`
+    );
+  },
+
+  createBookingOperation(
+    bookingId: string,
+    payload: {
+      type: PartnerBookingOperation["type"];
+      checklist?: string[];
+      odometer?: number;
+      fuelLevel?: string;
+      damageNote?: string;
+      fineAmount?: number;
+      staffNote?: string;
+      nextStatus?: string;
+    }
+  ) {
+    return requestPartner<{
+      operation: PartnerBookingOperation;
+      booking: PartnerBooking;
+    }>(`/partner/bookings/${encodeURIComponent(bookingId)}/operations`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   },
 };

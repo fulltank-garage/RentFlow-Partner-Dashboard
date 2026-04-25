@@ -15,6 +15,7 @@ export type PartnerNavItem = {
 export const PARTNER_NAV: PartnerNavItem[] = [
   { label: "ภาพรวม", href: "/admin/dashboard", group: "Operations" },
   { label: "ตั้งค่าร้าน", href: "/admin/store-setup", group: "Operations" },
+  { label: "จัดหน้าเว็บ", href: "/admin/store-builder", group: "Operations" },
   { label: "รถของร้าน", href: "/admin/cars", group: "Operations" },
   { label: "สาขา", href: "/admin/locations", group: "Operations" },
   { label: "การจอง", href: "/admin/bookings", group: "Sales" },

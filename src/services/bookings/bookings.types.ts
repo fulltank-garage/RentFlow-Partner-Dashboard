@@ -17,3 +17,16 @@ export type PartnerBooking = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export type PartnerBookingOperation = {
+  id: string;
+  bookingId: string;
+  type: "inspection" | "handover" | "return" | "damage" | "fine" | "note";
+  checklist?: string[];
+  odometer?: number;
+  fuelLevel?: string;
+  damageNote?: string;
+  fineAmount?: number;
+  staffNote?: string;
+  createdAt?: string;
+};

@@ -65,6 +65,8 @@ function bookingStatusLabel(status: string) {
     pending: "รอดำเนินการ",
     confirmed: "ยืนยันแล้ว",
     paid: "ชำระแล้ว",
+    active: "กำลังเช่า",
+    review: "รอตรวจสอบ",
     completed: "เสร็จสิ้น",
     cancelled: "ยกเลิก",
   };
@@ -331,6 +333,28 @@ export function PartnerBookingsPage() {
     }
   }
 
+  async function createOperation(booking: PartnerBooking, type: "inspection" | "handover" | "return" | "damage" | "fine" | "note") {
+    try {
+      await bookingsService.createBookingOperation(booking.id, {
+        type,
+        checklist:
+          type === "handover"
+            ? ["ตรวจเอกสารผู้เช่า", "ตรวจสภาพรถก่อนส่งมอบ", "บันทึกเลขไมล์"]
+            : type === "return"
+              ? ["ตรวจสภาพรถหลังคืน", "ตรวจน้ำมัน", "ยืนยันคืนรถเรียบร้อย"]
+              : ["บันทึกเหตุการณ์"],
+        staffNote:
+          type === "damage"
+            ? "พบรายการที่ต้องตรวจสอบเพิ่มเติม"
+            : "",
+      });
+      setSnack({ open: true, message: "บันทึกงานรถสำเร็จ", severity: "success" });
+      load();
+    } catch (error: unknown) {
+      setSnack({ open: true, message: error instanceof Error ? error.message : "บันทึกงานรถไม่สำเร็จ", severity: "error" });
+    }
+  }
+
   return (
     <Box className="grid gap-4">
       <SectionHeader
@@ -342,6 +366,8 @@ export function PartnerBookingsPage() {
             <MenuItem value="pending">รอดำเนินการ</MenuItem>
             <MenuItem value="confirmed">ยืนยันแล้ว</MenuItem>
             <MenuItem value="paid">ชำระแล้ว</MenuItem>
+            <MenuItem value="active">กำลังเช่า</MenuItem>
+            <MenuItem value="review">รอตรวจสอบ</MenuItem>
             <MenuItem value="completed">เสร็จสิ้น</MenuItem>
             <MenuItem value="cancelled">ยกเลิก</MenuItem>
           </TextField>
@@ -368,10 +394,26 @@ export function PartnerBookingsPage() {
                       <MenuItem value="pending">รอดำเนินการ</MenuItem>
                       <MenuItem value="confirmed">ยืนยันแล้ว</MenuItem>
                       <MenuItem value="paid">ชำระแล้ว</MenuItem>
+                      <MenuItem value="active">กำลังเช่า</MenuItem>
+                      <MenuItem value="review">รอตรวจสอบ</MenuItem>
                       <MenuItem value="completed">เสร็จสิ้น</MenuItem>
                       <MenuItem value="cancelled">ยกเลิก</MenuItem>
                     </TextField>
                   </Stack>
+                </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} className="px-4 pb-4">
+                  <Button variant="outlined" onClick={() => createOperation(booking, "inspection")} className="rounded-full!">
+                    ตรวจรถ
+                  </Button>
+                  <Button variant="outlined" onClick={() => createOperation(booking, "handover")} className="rounded-full!">
+                    ส่งมอบรถ
+                  </Button>
+                  <Button variant="outlined" onClick={() => createOperation(booking, "return")} className="rounded-full!">
+                    รับคืนรถ
+                  </Button>
+                  <Button variant="outlined" color="warning" onClick={() => createOperation(booking, "damage")} className="rounded-full!">
+                    บันทึกความเสียหาย
+                  </Button>
                 </Stack>
                 {index < items.length - 1 ? <Divider /> : null}
               </Box>
