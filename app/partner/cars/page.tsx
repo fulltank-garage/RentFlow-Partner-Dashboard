@@ -187,6 +187,7 @@ export default function PartnerCarsPage() {
       "booking.updated",
       "booking.cancelled",
       "car.changed",
+      "car.status.changed",
       "availability.changed",
       "branch.changed",
     ],

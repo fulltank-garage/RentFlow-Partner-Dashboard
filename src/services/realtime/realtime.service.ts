@@ -6,6 +6,7 @@ import type { PartnerRealtimeEvent } from "./realtime.types";
 type SubscribeOptions = {
   onEvent: (event: PartnerRealtimeEvent) => void;
   onError?: () => void;
+  onStatus?: (status: "connecting" | "open" | "closed" | "error") => void;
 };
 
 function partnerRealtimeUrl() {
@@ -29,6 +30,7 @@ export function subscribePartnerRealtime(options: SubscribeOptions) {
 
   const connect = () => {
     if (closed) return;
+    options.onStatus?.("connecting");
     socket = new WebSocket(partnerRealtimeUrl());
     socket.onmessage = (message) => {
       try {
@@ -39,11 +41,14 @@ export function subscribePartnerRealtime(options: SubscribeOptions) {
     };
     socket.onopen = () => {
       attempts = 0;
+      options.onStatus?.("open");
     };
     socket.onerror = () => {
+      options.onStatus?.("error");
       options.onError?.();
     };
     socket.onclose = () => {
+      options.onStatus?.("closed");
       if (closed) return;
       attempts += 1;
       reconnectTimer = window.setTimeout(
@@ -61,4 +66,3 @@ export function subscribePartnerRealtime(options: SubscribeOptions) {
     socket?.close();
   };
 }
-

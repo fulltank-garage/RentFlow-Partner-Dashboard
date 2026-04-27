@@ -23,6 +23,7 @@ import {
     validateDomainSlug,
     writeStoreProfile,
 } from "@/src/lib/partner-store";
+import { usePartnerRealtimeRefresh } from "@/src/hooks/realtime/usePartnerRealtimeRefresh";
 import { RentFlowApiError } from "@/src/services/core/api-client.service";
 import { tenantService } from "@/src/services/tenant/tenant.service";
 
@@ -41,6 +42,14 @@ export default function StoreSetupPage() {
         "กรุณากรอกชื่อร้านและชื่อโดเมนให้ถูกต้อง"
     );
     const [saving, setSaving] = React.useState(false);
+    const [reloadTick, setReloadTick] = React.useState(0);
+
+    usePartnerRealtimeRefresh({
+        events: ["tenant.updated"],
+        onRefresh: React.useCallback(() => {
+            setReloadTick((current) => current + 1);
+        }, []),
+    });
 
     React.useEffect(() => {
         let active = true;
@@ -108,7 +117,7 @@ export default function StoreSetupPage() {
         return () => {
             active = false;
         };
-    }, []);
+    }, [reloadTick]);
 
     const normalizedSlug = normalizeDomainSlug(domainSlug);
     const domainError = domainSlug ? validateDomainSlug(normalizedSlug) : "";

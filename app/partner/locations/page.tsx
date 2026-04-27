@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { usePartnerRealtimeRefresh } from "@/src/hooks/realtime/usePartnerRealtimeRefresh";
 import { branchesService } from "@/src/services/branches/branches.service";
 import type {
   PartnerBranch,
@@ -132,6 +133,11 @@ export default function PartnerLocationsPage() {
   React.useEffect(() => {
     loadBranches();
   }, [loadBranches]);
+
+  usePartnerRealtimeRefresh({
+    events: ["branch.changed"],
+    onRefresh: loadBranches,
+  });
 
   const filteredBranches = React.useMemo(() => {
     const keyword = q.trim().toLowerCase();

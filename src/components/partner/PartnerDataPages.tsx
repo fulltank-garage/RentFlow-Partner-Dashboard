@@ -43,6 +43,7 @@ import type { PartnerPayment } from "@/src/services/payments/payments.types";
 import { promotionsService } from "@/src/services/promotions/promotions.service";
 import type { PartnerPromotion } from "@/src/services/promotions/promotions.types";
 import { reportsService } from "@/src/services/reports/reports.service";
+import type { PartnerRealtimeEventType } from "@/src/services/realtime/realtime.types";
 
 type Snack = {
   open: boolean;
@@ -713,6 +714,7 @@ export function PartnerCalendarPage() {
       "booking.created",
       "booking.updated",
       "booking.cancelled",
+      "car.status.changed",
       "availability.changed",
     ],
     onRefresh: load,
@@ -763,15 +765,15 @@ function ListCard({ title, empty, items }: { title: string; empty: string; items
 }
 
 export function PartnerPromotionsPage() {
-  return <CrudPage<PartnerPromotion> title="โปรโมชัน" description="จัดการคูปองและส่วนลด" load={promotionsService.listPromotions} create={promotionsService.createPromotion} update={promotionsService.updatePromotion} remove={promotionsService.deletePromotion} defaults={{ code: "", name: "", description: "", discountType: "percent", discountValue: 0, isActive: true }} fields={["code", "name", "description", "discountType", "discountValue"]} />;
+  return <CrudPage<PartnerPromotion> title="โปรโมชัน" description="จัดการคูปองและส่วนลด" load={promotionsService.listPromotions} create={promotionsService.createPromotion} update={promotionsService.updatePromotion} remove={promotionsService.deletePromotion} defaults={{ code: "", name: "", description: "", discountType: "percent", discountValue: 0, isActive: true }} fields={["code", "name", "description", "discountType", "discountValue"]} realtimeEvents={["promotion.changed"]} />;
 }
 
 export function PartnerAddonsPage() {
-  return <CrudPage<PartnerAddon> title="บริการเสริม" description="จัดการอุปกรณ์หรือบริการที่คิดเงินเพิ่ม" load={addonsService.listAddons} create={addonsService.createAddon} update={addonsService.updateAddon} remove={addonsService.deleteAddon} defaults={{ name: "", description: "", price: 0, unit: "day", isActive: true }} fields={["name", "description", "price", "unit"]} />;
+  return <CrudPage<PartnerAddon> title="บริการเสริม" description="จัดการอุปกรณ์หรือบริการที่คิดเงินเพิ่ม" load={addonsService.listAddons} create={addonsService.createAddon} update={addonsService.updateAddon} remove={addonsService.deleteAddon} defaults={{ name: "", description: "", price: 0, unit: "day", isActive: true }} fields={["name", "description", "price", "unit"]} realtimeEvents={["addon.changed"]} />;
 }
 
 export function PartnerLeadsPage() {
-  return <CrudPage<PartnerLead> title="ลีด" description="ติดตามลูกค้าที่สนใจเช่ารถ" load={leadsService.listLeads} create={leadsService.createLead} update={leadsService.updateLead} remove={leadsService.deleteLead} defaults={{ name: "", email: "", phone: "", source: "", status: "new", interestedCar: "", note: "" }} fields={["name", "email", "phone", "source", "status", "interestedCar", "note"]} />;
+  return <CrudPage<PartnerLead> title="ลีด" description="ติดตามลูกค้าที่สนใจเช่ารถ" load={leadsService.listLeads} create={leadsService.createLead} update={leadsService.updateLead} remove={leadsService.deleteLead} defaults={{ name: "", email: "", phone: "", source: "", status: "new", interestedCar: "", note: "" }} fields={["name", "email", "phone", "source", "status", "interestedCar", "note"]} realtimeEvents={["lead.changed"]} />;
 }
 
 type CrudBase = { id: string; name?: string; code?: string; isActive?: boolean };
@@ -785,6 +787,7 @@ function CrudPage<T extends CrudBase>({
   remove,
   defaults,
   fields,
+  realtimeEvents = [],
 }: {
   title: string;
   description: string;
@@ -794,6 +797,7 @@ function CrudPage<T extends CrudBase>({
   remove: (id: string) => Promise<null>;
   defaults: Omit<T, "id" | "createdAt">;
   fields: Array<keyof Omit<T, "id" | "createdAt">>;
+  realtimeEvents?: PartnerRealtimeEventType[];
 }) {
   const [items, setItems] = React.useState<T[]>([]);
   const [form, setForm] = React.useState<Omit<T, "id" | "createdAt">>(defaults);
@@ -805,6 +809,11 @@ function CrudPage<T extends CrudBase>({
     try { setItems((await load()).items); } catch (error: unknown) { setSnack({ open: true, message: error instanceof Error ? error.message : "โหลดข้อมูลไม่สำเร็จ", severity: "error" }); } finally { setLoading(false); }
   }, [load, setSnack]);
   React.useEffect(() => { reload(); }, [reload]);
+  usePartnerRealtimeRefresh({
+    events: realtimeEvents,
+    onRefresh: reload,
+    enabled: realtimeEvents.length > 0,
+  });
   async function save() {
     try {
       if (editingId) await update(editingId, form); else await create(form);

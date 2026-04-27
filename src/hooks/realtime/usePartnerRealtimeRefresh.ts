@@ -11,14 +11,23 @@ type Options = {
   events: PartnerRealtimeEventType[];
   onRefresh: (event: PartnerRealtimeEvent) => void;
   enabled?: boolean;
+  fallbackIntervalMs?: number;
 };
 
 export function usePartnerRealtimeRefresh({
   events,
   onRefresh,
   enabled = true,
+  fallbackIntervalMs = 15000,
 }: Options) {
   const eventKey = events.join("|");
+  const onRefreshRef = React.useRef(onRefresh);
+  const lastEventAtRef = React.useRef(0);
+  const [socketReady, setSocketReady] = React.useState(false);
+
+  React.useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
 
   React.useEffect(() => {
     if (!enabled) return;
@@ -26,10 +35,28 @@ export function usePartnerRealtimeRefresh({
     return subscribePartnerRealtime({
       onEvent(event) {
         if (allowedEvents.has(event.type as PartnerRealtimeEventType)) {
-          onRefresh(event);
+          lastEventAtRef.current = Date.now();
+          onRefreshRef.current(event);
         }
       },
+      onStatus(status) {
+        setSocketReady(status === "open");
+      },
     });
-  }, [enabled, eventKey, onRefresh]);
-}
+  }, [enabled, eventKey]);
 
+  React.useEffect(() => {
+    if (!enabled || socketReady || fallbackIntervalMs <= 0) return;
+
+    const timer = window.setInterval(() => {
+      if (Date.now() - lastEventAtRef.current < fallbackIntervalMs) return;
+      onRefreshRef.current({
+        type: "availability.changed",
+        createdAt: new Date().toISOString(),
+        data: { fallback: true },
+      });
+    }, fallbackIntervalMs);
+
+    return () => window.clearInterval(timer);
+  }, [enabled, fallbackIntervalMs, socketReady]);
+}
