@@ -7,6 +7,9 @@ export type PartnerTenant = {
   logoUrl?: string;
   promoImageUrl?: string;
   promoImageUrls?: string[];
+  contactPhone?: string;
+  facebookPageUrl?: string;
+  lineOaQrCodeUrl?: string;
   status: string;
   plan: string;
   createdAt?: string;

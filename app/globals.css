@@ -107,6 +107,11 @@ a {
   color: var(--rf-partner-ink) !important;
 }
 
+.partner-login-title {
+  font-size: clamp(2rem, 1.1rem + 2.5vw, 3.45rem) !important;
+  line-height: 1.04 !important;
+}
+
 .partner-page-subtitle {
   max-width: 68rem;
   font-size: clamp(0.96rem, 0.9rem + 0.18vw, 1.08rem) !important;
@@ -413,6 +418,11 @@ a {
     font-size: clamp(1.65rem, 1.25rem + 2.8vw, 2.15rem) !important;
     line-height: 1.1 !important;
     letter-spacing: -0.035em !important;
+  }
+
+  .partner-login-title {
+    font-size: clamp(1.7rem, 1.05rem + 4.7vw, 2.45rem) !important;
+    line-height: 1.08 !important;
   }
 
   .partner-page-subtitle,

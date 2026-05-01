@@ -32,6 +32,9 @@ export type PartnerStoreProfile = {
     logoUrl?: string;
     promoImageUrl?: string;
     promoImageUrls?: string[];
+    contactPhone?: string;
+    facebookPageUrl?: string;
+    lineOaQrCodeUrl?: string;
     createdAt: string;
     updatedAt: string;
 };
@@ -84,6 +87,7 @@ export function readStoreProfile() {
             promoImageUrls: (parsed.promoImageUrls || [])
                 .map((url) => resolvePartnerAssetUrl(url))
                 .filter(Boolean) as string[],
+            lineOaQrCodeUrl: resolvePartnerAssetUrl(parsed.lineOaQrCodeUrl),
         };
     } catch {
         return null;
@@ -101,6 +105,9 @@ export function writeStoreProfile(input: {
     logoUrl?: string | null;
     promoImageUrl?: string | null;
     promoImageUrls?: string[] | null;
+    contactPhone?: string;
+    facebookPageUrl?: string;
+    lineOaQrCodeUrl?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }) {
@@ -131,6 +138,19 @@ export function writeStoreProfile(input: {
                 : (input.promoImageUrls || [])
                       .map((url) => resolvePartnerAssetUrl(url))
                       .filter(Boolean) as string[],
+        contactPhone:
+            input.contactPhone === undefined
+                ? existing?.contactPhone
+                : input.contactPhone.trim(),
+        facebookPageUrl:
+            input.facebookPageUrl === undefined
+                ? existing?.facebookPageUrl
+                : input.facebookPageUrl.trim(),
+        lineOaQrCodeUrl: resolvePartnerAssetUrl(
+            input.lineOaQrCodeUrl === undefined
+                ? existing?.lineOaQrCodeUrl
+                : input.lineOaQrCodeUrl || undefined
+        ),
         createdAt: input.createdAt ?? existing?.createdAt ?? now,
         updatedAt: input.updatedAt ?? now,
     };

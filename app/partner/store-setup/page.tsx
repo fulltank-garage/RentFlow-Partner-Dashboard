@@ -33,10 +33,15 @@ export default function StoreSetupPage() {
     const [domainSlug, setDomainSlug] = React.useState("");
     const [logoUrl, setLogoUrl] = React.useState("");
     const [promoImageUrls, setPromoImageUrls] = React.useState<string[]>([]);
+    const [contactPhone, setContactPhone] = React.useState("");
+    const [facebookPageUrl, setFacebookPageUrl] = React.useState("");
+    const [lineOaQrCodeUrl, setLineOaQrCodeUrl] = React.useState("");
     const [logoFile, setLogoFile] = React.useState<File | null>(null);
     const [promoImageFiles, setPromoImageFiles] = React.useState<File[]>([]);
+    const [lineOaQrCodeFile, setLineOaQrCodeFile] = React.useState<File | null>(null);
     const [logoChanged, setLogoChanged] = React.useState(false);
     const [promoImagesChanged, setPromoImagesChanged] = React.useState(false);
+    const [lineOaQrCodeChanged, setLineOaQrCodeChanged] = React.useState(false);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState(
         "กรุณากรอกชื่อร้านและชื่อโดเมนให้ถูกต้อง"
@@ -59,6 +64,9 @@ export default function StoreSetupPage() {
             setDomainSlug(profile.domainSlug);
             setLogoUrl(profile.logoUrl || "");
             setPromoImageUrls(profile.promoImageUrls?.length ? profile.promoImageUrls : profile.promoImageUrl ? [profile.promoImageUrl] : []);
+            setContactPhone(profile.contactPhone || "");
+            setFacebookPageUrl(profile.facebookPageUrl || "");
+            setLineOaQrCodeUrl(profile.lineOaQrCodeUrl || "");
         }
 
         tenantService
@@ -76,6 +84,9 @@ export default function StoreSetupPage() {
                     logoUrl: tenant.logoUrl || profile?.logoUrl,
                     promoImageUrl: tenant.promoImageUrl || profile?.promoImageUrl,
                     promoImageUrls: tenant.promoImageUrls?.length ? tenant.promoImageUrls : profile?.promoImageUrls,
+                    contactPhone: tenant.contactPhone || profile?.contactPhone || "",
+                    facebookPageUrl: tenant.facebookPageUrl || profile?.facebookPageUrl || "",
+                    lineOaQrCodeUrl: tenant.lineOaQrCodeUrl || profile?.lineOaQrCodeUrl || null,
                     createdAt: tenant.createdAt,
                     updatedAt: tenant.updatedAt,
                 });
@@ -93,10 +104,15 @@ export default function StoreSetupPage() {
                               ? [profile.promoImageUrl]
                               : []
                 );
+                setContactPhone(tenant.contactPhone || profile?.contactPhone || "");
+                setFacebookPageUrl(tenant.facebookPageUrl || profile?.facebookPageUrl || "");
+                setLineOaQrCodeUrl(tenant.lineOaQrCodeUrl || profile?.lineOaQrCodeUrl || "");
                 setLogoFile(null);
                 setPromoImageFiles([]);
+                setLineOaQrCodeFile(null);
                 setLogoChanged(false);
                 setPromoImagesChanged(false);
+                setLineOaQrCodeChanged(false);
             })
             .catch((error: unknown) => {
                 if (
@@ -271,6 +287,18 @@ export default function StoreSetupPage() {
         });
     }
 
+    function handleLineOaQrCodeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        readImageFile(event, {
+            maxSize: 5 * 1024 * 1024,
+            maxSizeLabel: "5 เมกะไบต์",
+            onLoad: (value, file) => {
+                setLineOaQrCodeUrl(value);
+                setLineOaQrCodeFile(file);
+                setLineOaQrCodeChanged(true);
+            },
+        });
+    }
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -284,12 +312,15 @@ export default function StoreSetupPage() {
             setSaving(true);
             const currentLogoUrl = logoUrl.trim();
             const currentPromoImageUrls = promoImageUrls.map((url) => url.trim()).filter(Boolean);
+            const currentLineOaQrCodeUrl = lineOaQrCodeUrl.trim();
             const existingPromoImageUrls = currentPromoImageUrls.filter(
                 (url) => !url.startsWith("data:") && !url.startsWith("blob:")
             );
             const tenant = await tenantService.saveMyTenant({
                 shopName,
                 domainSlug: normalizedSlug,
+                contactPhone: contactPhone.trim(),
+                facebookPageUrl: facebookPageUrl.trim(),
                 ...(logoChanged
                     ? {
                         logoUrl: currentLogoUrl,
@@ -304,8 +335,16 @@ export default function StoreSetupPage() {
                         clearPromoImages: currentPromoImageUrls.length === 0,
                     }
                     : {}),
+                ...(lineOaQrCodeChanged
+                    ? {
+                        lineOaQrCodeUrl: currentLineOaQrCodeUrl,
+                        lineOaQrCodeFile,
+                    }
+                    : {}),
             });
             const nextLogoUrl = tenant.logoUrl || currentLogoUrl || "";
+            const nextLineOaQrCodeUrl =
+                tenant.lineOaQrCodeUrl || currentLineOaQrCodeUrl || "";
             const nextPromoImageUrls =
                 tenant.promoImageUrls?.length
                     ? tenant.promoImageUrls
@@ -323,15 +362,23 @@ export default function StoreSetupPage() {
                 logoUrl: nextLogoUrl || null,
                 promoImageUrl: nextPromoImageUrls[0] || null,
                 promoImageUrls: nextPromoImageUrls,
+                contactPhone: tenant.contactPhone || contactPhone.trim(),
+                facebookPageUrl: tenant.facebookPageUrl || facebookPageUrl.trim(),
+                lineOaQrCodeUrl: nextLineOaQrCodeUrl || null,
                 createdAt: tenant.createdAt,
                 updatedAt: tenant.updatedAt,
             });
             setLogoUrl(nextLogoUrl);
             setPromoImageUrls(nextPromoImageUrls);
+            setContactPhone(tenant.contactPhone || contactPhone.trim());
+            setFacebookPageUrl(tenant.facebookPageUrl || facebookPageUrl.trim());
+            setLineOaQrCodeUrl(nextLineOaQrCodeUrl);
             setLogoFile(null);
             setPromoImageFiles([]);
+            setLineOaQrCodeFile(null);
             setLogoChanged(false);
             setPromoImagesChanged(false);
+            setLineOaQrCodeChanged(false);
             setSnackbarMessage("บันทึกข้อมูลร้านเรียบร้อยแล้ว");
             setSnackbarOpen(true);
         } catch (error: unknown) {
@@ -547,6 +594,96 @@ export default function StoreSetupPage() {
                                 />
                             </Box>
 
+                            <Box className="grid gap-4 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
+                                <Box className="grid gap-1">
+                                    <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
+                                        ช่องทางติดต่อหน้าร้าน
+                                    </Typography>
+                                    <Typography className="text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
+                                        ข้อมูลส่วนนี้จะแสดงใน footer ของหน้าร้าน เพื่อให้ลูกค้าติดต่อร้านได้ทันที
+                                    </Typography>
+                                </Box>
+
+                                <TextField
+                                    label="เบอร์โทรศัพท์ร้าน"
+                                    value={contactPhone}
+                                    onChange={(event) => setContactPhone(event.target.value)}
+                                    fullWidth
+                                    helperText="เช่น 0812345678 หรือ 02-123-4567"
+                                />
+
+                                <TextField
+                                    label="ลิงก์เพจ Facebook"
+                                    value={facebookPageUrl}
+                                    onChange={(event) => setFacebookPageUrl(event.target.value)}
+                                    fullWidth
+                                    helperText="เช่น facebook.com/your-shop หรือ https://facebook.com/your-shop"
+                                />
+
+                                <Box className="rounded-[26px] border border-slate-200 bg-slate-50 p-4">
+                                    <Stack
+                                        direction={{ xs: "column", sm: "row" }}
+                                        spacing={2.5}
+                                        className="items-start sm:items-center"
+                                    >
+                                        <Box className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-[24px] bg-white text-center text-sm font-bold text-slate-400">
+                                            {lineOaQrCodeUrl ? (
+                                                <Box
+                                                    component="img"
+                                                    src={lineOaQrCodeUrl}
+                                                    alt="QR Code LINE OA"
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            ) : (
+                                                "LINE OA"
+                                            )}
+                                        </Box>
+
+                                        <Box className="min-w-0 flex-1">
+                                            <Typography className="text-[1rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.06rem]">
+                                                QR Code LINE OA
+                                            </Typography>
+                                            <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
+                                                ใช้สำหรับให้ลูกค้าสแกนเพื่อแชทกับ LINE OA ของร้านโดยตรง
+                                            </Typography>
+                                            <Stack
+                                                direction={{ xs: "column", sm: "row" }}
+                                                spacing={1.25}
+                                                className="mt-4"
+                                            >
+                                                <Button
+                                                    variant="outlined"
+                                                    component="label"
+                                                    className="rounded-full!"
+                                                >
+                                                    เลือก QR Code
+                                                    <input
+                                                        hidden
+                                                        type="file"
+                                                        accept="image/png,image/jpeg,image/webp"
+                                                        onChange={handleLineOaQrCodeChange}
+                                                    />
+                                                </Button>
+                                                {lineOaQrCodeUrl ? (
+                                                    <Button
+                                                        variant="text"
+                                                        color="error"
+                                                        className="rounded-full!"
+                                                        onClick={() => {
+                                                            setLineOaQrCodeUrl("");
+                                                            setLineOaQrCodeFile(null);
+                                                            setLineOaQrCodeChanged(true);
+                                                        }}
+                                                    >
+                                                        ลบ QR Code
+                                                    </Button>
+                                                ) : null}
+                                            </Stack>
+                                        </Box>
+                                    </Stack>
+                                </Box>
+                            </Box>
+
                             <Box className="grid gap-3 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
                                 <Typography className="text-[1rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.06rem]">
                                     ตัวอย่างลิงก์หน้าร้าน
@@ -625,6 +762,31 @@ export default function StoreSetupPage() {
                                     </Stack>
 
                                     <Divider />
+
+                                    <Box className="grid gap-3 rounded-[24px] bg-white p-4">
+                                        <Typography className="text-[0.98rem] font-bold tracking-[-0.03em] text-slate-950">
+                                            Footer หน้าร้าน
+                                        </Typography>
+                                        <Typography className="text-[0.92rem] leading-7 text-slate-500">
+                                            โทร: {contactPhone.trim() || "ยังไม่ได้ตั้งค่าเบอร์โทร"}
+                                        </Typography>
+                                        <Typography className="break-all text-[0.92rem] leading-7 text-slate-500">
+                                            Facebook: {facebookPageUrl.trim() || "ยังไม่ได้ตั้งค่าเพจ"}
+                                        </Typography>
+                                        {lineOaQrCodeUrl ? (
+                                            <Box className="flex items-center gap-3">
+                                                <Box
+                                                    component="img"
+                                                    src={lineOaQrCodeUrl}
+                                                    alt="QR Code LINE OA"
+                                                    className="h-16 w-16 rounded-2xl bg-white object-contain"
+                                                />
+                                                <Typography className="text-[0.92rem] font-semibold text-slate-600">
+                                                    พร้อมแสดง QR Code LINE OA
+                                                </Typography>
+                                            </Box>
+                                        ) : null}
+                                    </Box>
 
                                     <Box className="grid gap-3">
                                         {[

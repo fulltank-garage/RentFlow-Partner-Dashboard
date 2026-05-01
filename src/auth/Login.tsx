@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Alert,
@@ -21,18 +22,19 @@ import { RentFlowApiError } from "@/src/services/core/api-client.service";
 import { tenantService } from "@/src/services/tenant/tenant.service";
 import { writeStoreProfile } from "@/src/lib/partner-store";
 
-const fieldSX = {
+const loginFieldSX = {
   "& .MuiOutlinedInput-root": {
-    borderRadius: "22px",
-    overflow: "hidden",
-    backgroundColor: "#ffffff",
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "rgba(148,163,184,0.22)",
-    },
-    "& .MuiOutlinedInput-input": {
-      padding: "16px 18px",
-      fontWeight: 600,
-    },
+    minHeight: "3.35rem",
+    alignItems: "center",
+  },
+  "& .MuiOutlinedInput-input": {
+    height: "auto",
+    paddingTop: "0.95rem !important",
+    paddingBottom: "0.95rem !important",
+    lineHeight: "1.35",
+  },
+  "& .MuiInputLabel-root:not(.MuiInputLabel-shrink)": {
+    transform: "translate(18px, 15px) scale(1)",
   },
   "& input:-webkit-autofill": {
     WebkitBoxShadow: "0 0 0 100px white inset",
@@ -114,32 +116,42 @@ export default function Login() {
   }
 
   return (
-    <Box className="min-h-screen bg-[var(--rf-partner-bg)] px-4 py-8 md:px-6">
-      <Box className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-        <Card elevation={0} className="partner-card order-2 rounded-[34px]! lg:order-1">
-          <CardContent className="p-6! md:p-8!">
+    <Box
+      className="relative grid min-h-screen place-items-center overflow-hidden bg-[var(--rf-partner-bg)] px-4 py-8 md:px-6"
+      sx={{
+        backgroundImage:
+          "linear-gradient(90deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.86) 46%, rgba(255,255,255,0.62) 100%), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=2200&q=85')",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+      }}
+    >
+      <Box className="relative z-10 mx-auto grid w-full max-w-5xl items-center justify-center gap-5 lg:grid-cols-2">
+        <Card elevation={0} className="partner-card order-2 flex w-full rounded-[34px]! bg-white/82! lg:order-1 lg:aspect-square">
+          <CardContent className="flex w-full flex-col gap-6 p-6! md:p-8!">
             <Box className="partner-page-header">
-              <Typography className="partner-page-title">
-                จัดการร้าน รถ และการจอง
-                <br />
-                ในที่เดียว
+              <Typography className="partner-page-title partner-login-title">
+                จัดการร้าน รถ และ
+                <span className="whitespace-nowrap">การจองในที่เดียว</span>
               </Typography>
               <Typography className="partner-page-subtitle">
-                หลังบ้านนี้ออกแบบสำหรับเจ้าของร้านโดยตรง ให้ดูข้อมูลร้าน ปรับหน้าร้าน
-                จัดการรถ ตรวจการจอง และติดตามการชำระเงินได้จากหน้าจอเดียว
+                หลังบ้านสำหรับดูแลร้าน รถ การจอง และการชำระเงินในที่เดียว
               </Typography>
             </Box>
 
-            <Divider className="my-6! border-white/70!" />
+            <Divider className="border-white/70!" />
 
-            <Stack spacing={2.25}>
+            <Stack spacing={1.35}>
               {[
-                "ตั้งค่าร้านและโดเมนของคุณได้จากระบบเดียว",
-                "จัดการรถ สาขา การจอง และบัญชีไลน์ของร้านในหน้าเดียวกัน",
-                "หน้าหลังบ้านอ่านง่ายและรองรับเดสก์ท็อป แมคบุ๊ก ไอแพด และมือถือ",
+                "ตั้งค่าร้านและโดเมน",
+                "จัดการรถ สาขา และการจอง",
+                "ใช้งานง่ายทุกขนาดหน้าจอ",
               ].map((item) => (
-                <Box key={item} className="partner-card-soft rounded-[24px] px-4 py-4">
-                  <Typography className="text-sm font-semibold leading-7 text-slate-700">
+                <Box
+                  key={item}
+                  className="rounded-[22px] border border-white/60 bg-white/46 p-4 backdrop-blur-[2px] md:p-4"
+                >
+                  <Typography className="text-sm font-medium leading-7 text-slate-600">
                     {item}
                   </Typography>
                 </Box>
@@ -148,10 +160,20 @@ export default function Login() {
           </CardContent>
         </Card>
 
-        <Card elevation={0} className="partner-card order-1 rounded-[34px]! lg:order-2">
-          <CardContent className="p-6! md:p-8!">
-            <Box className="mx-auto mb-6 grid h-14 w-14 place-items-center rounded-[22px] bg-[var(--rf-partner-blue-deep)] text-base font-black tracking-[-0.05em] text-white shadow-[0_20px_44px_rgba(15,23,42,0.24)]">
-              RF
+        <Card
+          elevation={0}
+          className="partner-card order-1 flex w-full overflow-hidden rounded-[34px]! border-slate-200! bg-white! shadow-[0_28px_80px_rgba(15,23,42,0.16)]! lg:order-2 lg:aspect-square"
+        >
+          <CardContent className="grid w-full content-start gap-4 p-6! pb-7! md:p-8! md:pb-9!">
+            <Box className="mx-auto grid h-14 w-14 place-items-center md:h-16 md:w-16">
+              <Image
+                src="/RentFlow.svg"
+                alt="RentFlow"
+                width={64}
+                height={64}
+                priority
+                className="h-14 w-14 object-contain md:h-16 md:w-16"
+              />
             </Box>
 
             <Stack spacing={1} className="items-center text-center">
@@ -159,21 +181,23 @@ export default function Login() {
                 เข้าสู่ระบบศูนย์จัดการร้าน
               </Typography>
               <Typography className="partner-section-subtitle">
-                ใช้ชื่อผู้ใช้และรหัสผ่านของร้านเพื่อเข้าสู่หน้าจัดการ
+                ใช้บัญชีร้านของคุณเพื่อเข้าสู่ระบบ
               </Typography>
             </Stack>
 
-            <Divider className="mt-6! mb-7! border-white/70!" />
+            <Divider className="border-white/70!" />
 
-            {error ? (
-              <Alert
-                severity="error"
-                className="mb-4 rounded-[22px]!"
-                onClose={() => setError(null)}
-              >
-                {error}
-              </Alert>
-            ) : null}
+            <Box className="min-h-[54px]">
+              {error ? (
+                <Alert
+                  severity="error"
+                  className="rounded-[22px]! py-1!"
+                  onClose={() => setError(null)}
+                >
+                  {error}
+                </Alert>
+              ) : null}
+            </Box>
 
             <Box component="form" onSubmit={handleSubmit} className="grid gap-4">
               <TextField
@@ -181,10 +205,10 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 fullWidth
-                sx={fieldSX}
+                sx={loginFieldSX}
                 autoComplete="username"
                 error={!usernameOk}
-                helperText={!usernameOk ? "ชื่อผู้ใช้อย่างน้อย 3 ตัวอักษร" : " "}
+                helperText={!usernameOk ? "ชื่อผู้ใช้อย่างน้อย 3 ตัวอักษร" : undefined}
               />
 
               <TextField
@@ -193,10 +217,10 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 fullWidth
-                sx={fieldSX}
+                sx={loginFieldSX}
                 autoComplete="current-password"
                 error={!pwOk}
-                helperText={!pwOk ? "อย่างน้อย 6 ตัวอักษร" : " "}
+                helperText={!pwOk ? "อย่างน้อย 6 ตัวอักษร" : undefined}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -222,7 +246,7 @@ export default function Login() {
                 type="submit"
                 variant="contained"
                 disabled={!canSubmit}
-                className="mt-1 rounded-full! py-3.5! font-semibold!"
+                className="rounded-full! font-semibold!"
               >
                 {loading ? (
                   <Stack direction="row" className="items-center gap-2">
