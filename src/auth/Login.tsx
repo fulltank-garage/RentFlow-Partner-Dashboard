@@ -131,8 +131,8 @@ export default function Login() {
           <CardContent className="flex w-full flex-col gap-6 p-6! md:p-8!">
             <Box className="partner-page-header">
               <Typography className="partner-page-title partner-login-title">
-                จัดการร้าน รถ และ
-                <span className="whitespace-nowrap">การจองในที่เดียว</span>
+                จัดการร้าน รถ{" "}
+                <span className="whitespace-nowrap">และการจองในที่เดียว</span>
               </Typography>
               <Typography className="partner-page-subtitle">
                 หลังบ้านสำหรับดูแลร้าน รถ การจอง และการชำระเงินในที่เดียว
