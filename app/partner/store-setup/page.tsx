@@ -313,6 +313,8 @@ export default function StoreSetupPage() {
             const currentLogoUrl = logoUrl.trim();
             const currentPromoImageUrls = promoImageUrls.map((url) => url.trim()).filter(Boolean);
             const currentLineOaQrCodeUrl = lineOaQrCodeUrl.trim();
+            const hasInlineLogo = currentLogoUrl.startsWith("data:");
+            const hasInlineLineOaQrCode = currentLineOaQrCodeUrl.startsWith("data:");
             const existingPromoImageUrls = currentPromoImageUrls.filter(
                 (url) => !url.startsWith("data:") && !url.startsWith("blob:")
             );
@@ -321,7 +323,7 @@ export default function StoreSetupPage() {
                 domainSlug: normalizedSlug,
                 contactPhone: contactPhone.trim(),
                 facebookPageUrl: facebookPageUrl.trim(),
-                ...(logoChanged
+                ...(logoChanged || hasInlineLogo
                     ? {
                         logoUrl: currentLogoUrl,
                         logoFile,
@@ -335,7 +337,7 @@ export default function StoreSetupPage() {
                         clearPromoImages: currentPromoImageUrls.length === 0,
                     }
                     : {}),
-                ...(lineOaQrCodeChanged
+                ...(lineOaQrCodeChanged || hasInlineLineOaQrCode
                     ? {
                         lineOaQrCodeUrl: currentLineOaQrCodeUrl,
                         lineOaQrCodeFile,
@@ -626,18 +628,16 @@ export default function StoreSetupPage() {
                                         spacing={2.5}
                                         className="items-start sm:items-center"
                                     >
-                                        <Box className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-[24px] bg-white text-center text-sm font-bold text-slate-400">
-                                            {lineOaQrCodeUrl ? (
+                                        {lineOaQrCodeUrl ? (
+                                            <Box className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-[24px] bg-white">
                                                 <Box
                                                     component="img"
                                                     src={lineOaQrCodeUrl}
                                                     alt="QR Code LINE OA"
                                                     className="h-full w-full object-contain"
                                                 />
-                                            ) : (
-                                                "LINE OA"
-                                            )}
-                                        </Box>
+                                            </Box>
+                                        ) : null}
 
                                         <Box className="min-w-0 flex-1">
                                             <Typography className="text-[1rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.06rem]">

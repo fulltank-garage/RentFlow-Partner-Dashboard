@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Box,
+  Divider,
   Drawer,
   List,
   ListItemButton,
@@ -24,10 +25,10 @@ type Props = {
 
 const GROUP_LABEL: Record<PartnerNavGroup, string> = {
   Operations: "จัดการร้าน",
-  Sales: "การขายและลูกค้า",
+  Sales: "การจองและลูกค้า",
   Finance: "การเงิน",
-  Analytics: "วิเคราะห์และการตลาด",
-  Settings: "ระบบและช่วยเหลือ",
+  Analytics: "จัดการยอดขาย",
+  Settings: "เครื่องมือร้าน",
 };
 
 const GROUPS: PartnerNavGroup[] = [
@@ -65,15 +66,23 @@ export default function PartnerSidebar({
 
   const content = (
     <Box
-      className="h-full bg-white"
+      className="partner-shell h-full border-0"
       sx={{
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Box className="px-5 pb-4 pt-5 md:px-5 md:pt-6" sx={{ flex: "0 0 auto" }}>
-        <Stack direction="row" spacing={1.4} alignItems="center">
-          <Box className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-[20px] bg-[var(--rf-partner-blue-deep)] text-sm font-black tracking-[-0.05em] text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)]">
+      <Box
+        sx={{
+          flex: "0 0 auto",
+          minHeight: 72,
+          display: "flex",
+          alignItems: "center",
+          px: { xs: 2, md: 3 },
+        }}
+      >
+        <Stack direction="row" spacing={1.5} alignItems="center" className="min-w-0">
+          <Box className="grid h-[42px] w-[42px] shrink-0 place-items-center overflow-hidden rounded-[18px] bg-[var(--rf-partner-blue-deep)] text-sm font-black tracking-[-0.05em] text-white shadow-[0_10px_28px_rgba(15,23,42,0.14)]">
             {storeProfile?.logoUrl ? (
               <Box
                 component="img"
@@ -86,22 +95,23 @@ export default function PartnerSidebar({
             )}
           </Box>
           <Box className="min-w-0">
-            <Typography className="truncate text-[1.02rem] font-extrabold leading-tight tracking-[-0.035em] text-slate-950">
+            <Typography className="truncate text-[1.02rem] font-extrabold tracking-[-0.03em] text-slate-950">
               {storeProfile?.shopName || "ศูนย์จัดการร้าน"}
-            </Typography>
-            <Typography className="mt-1 text-[0.78rem] font-medium leading-tight tracking-[-0.01em] text-slate-500">
-              Partner Dashboard
             </Typography>
           </Box>
         </Stack>
       </Box>
 
+      <Divider className="border-white/60!" />
+
       <Box
-        className="partner-scrollbar px-3 pb-5 pt-1"
+        className="partner-scrollbar px-3 py-3"
         sx={{
           flex: "1 1 auto",
           minHeight: 0,
           overflowY: "auto",
+          overscrollBehaviorY: "contain",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         {GROUPS.map((group, index) => {
@@ -112,13 +122,13 @@ export default function PartnerSidebar({
             <Box
               key={group}
               sx={{
-                mb: 1.55,
-                ...(index !== 0 && { pt: 0.15 }),
+                mb: 1.25,
+                ...(index !== 0 && { borderTop: 0 }),
               }}
             >
               <Typography
-                className="px-3 pb-2 pt-2 text-[0.78rem] uppercase tracking-[0.08em] text-slate-500"
-                sx={{ fontWeight: "850 !important" }}
+                className="px-2 pb-2 pt-3 text-[13px] tracking-[-0.035em] text-slate-600"
+                sx={{ fontWeight: "900 !important" }}
               >
                 {GROUP_LABEL[group]}
               </Typography>
@@ -129,7 +139,7 @@ export default function PartnerSidebar({
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 0.35,
+                  gap: 0.75,
                 }}
               >
                 {items.map((item) => {
@@ -143,16 +153,16 @@ export default function PartnerSidebar({
                       component={Link}
                       href={item.href}
                       onClick={onMobileClose}
-                      className="mx-0.5 rounded-[22px]"
+                      className="mx-1 rounded-[22px]"
                       sx={{
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
                         gap: 1,
                         borderRadius: "22px",
-                        minHeight: { xs: 50, md: 46 },
-                        px: 2,
-                        py: 1.1,
+                        minHeight: { xs: 52, md: 48 },
+                        px: 2.25,
+                        py: 1.35,
                         bgcolor: active ? "#eef1f5" : "transparent",
                         border: 0,
                         boxShadow: "none",
@@ -171,11 +181,11 @@ export default function PartnerSidebar({
                         primary={
                           <Typography
                             sx={{
-                              fontSize: { xs: 16, md: 15 },
+                              fontSize: { xs: 16.5, md: 15.2 },
                               fontWeight: "400 !important",
                               lineHeight: 1.3,
                               letterSpacing: "-0.02em",
-                              color: active ? "rgb(15 23 42)" : "rgb(71 85 105)",
+                              color: "rgb(30 41 59)",
                             }}
                           >
                             {item.label}
@@ -200,9 +210,12 @@ export default function PartnerSidebar({
 
   const paperSx = {
     width: drawerWidth,
+    height: "100dvh",
     borderRight: 0,
     bgcolor: "#ffffff",
     boxShadow: "none",
+    overflow: "hidden",
+    overscrollBehavior: "contain",
   } as const;
 
   return (

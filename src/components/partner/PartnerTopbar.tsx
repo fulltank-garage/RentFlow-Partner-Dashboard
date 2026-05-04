@@ -119,7 +119,7 @@ export default function PartnerTopbar({
             <MobileMenuGlyph open={false} />
           </Button>
 
-          <Box sx={{ ml: { xs: "auto", md: 0 } }}>
+          <Box sx={{ ml: "auto" }}>
             <Stack direction="row" spacing={1.25} alignItems="center">
               <Button
                 onClick={() => setOpenProfile(true)}
