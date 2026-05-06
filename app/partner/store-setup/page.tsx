@@ -29,6 +29,24 @@ import { tenantService } from "@/src/services/tenant/tenant.service";
 
 export default function StoreSetupPage() {
     const maxPromoImages = 8;
+    const setupSteps = [
+        {
+            title: "ข้อมูลร้าน",
+            desc: "ชื่อร้านและโดเมนที่ลูกค้าจะเห็น",
+        },
+        {
+            title: "รูปหน้าร้าน",
+            desc: "โลโก้และรูปโปรโมชันสำหรับหน้าแรก",
+        },
+        {
+            title: "ช่องทางติดต่อ",
+            desc: "เบอร์โทร Facebook และ QR LINE OA",
+        },
+        {
+            title: "ตรวจสอบ",
+            desc: "เช็กลิงก์และพรีวิวก่อนบันทึก",
+        },
+    ];
     const [shopName, setShopName] = React.useState("");
     const [domainSlug, setDomainSlug] = React.useState("");
     const [logoUrl, setLogoUrl] = React.useState("");
@@ -402,12 +420,30 @@ export default function StoreSetupPage() {
                     ตั้งค่าหน้าร้านให้พร้อมใช้งาน
                 </Typography>
                 <Typography className="partner-page-subtitle">
-                    ใส่ชื่อร้าน โดเมน และโลโก้ของคุณให้เรียบร้อย
-                    ระบบจะใช้ข้อมูลชุดนี้กับหน้าร้านของคุณโดยอัตโนมัติ
+                    จัดข้อมูลหลักของร้าน รูปภาพ และช่องทางติดต่อให้ลูกค้าเห็นถูกต้อง
                 </Typography>
             </Box>
 
-            <Box className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr]">
+            <Box className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {setupSteps.map((step, index) => (
+                    <Box
+                        key={step.title}
+                        className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)]"
+                    >
+                        <Box className="mb-4 inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-[var(--rf-partner-chip)] px-3 text-sm font-black text-slate-700">
+                            {index + 1}
+                        </Box>
+                        <Typography className="text-[1rem] font-black tracking-[-0.035em] text-slate-950">
+                            {step.title}
+                        </Typography>
+                        <Typography className="mt-1 text-[0.88rem] leading-6 text-slate-500">
+                            {step.desc}
+                        </Typography>
+                    </Box>
+                ))}
+            </Box>
+
+            <Box className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
                 <Card elevation={0} className="partner-card rounded-[34px]!">
                     <CardContent className="p-5! md:p-7!">
                         <Box
@@ -417,11 +453,45 @@ export default function StoreSetupPage() {
                         >
                             <Box className="grid gap-2">
                                 <Typography className="partner-section-title text-slate-950">
-                                    ข้อมูลหน้าร้าน
+                                    1. ข้อมูลร้านและโดเมน
                                 </Typography>
                                 <Typography className="partner-section-subtitle">
-                                    ปรับรายละเอียดหลักของร้านให้ลูกค้าเห็นได้ชัดและจดจำง่าย
+                                    ตั้งชื่อร้านและลิงก์หน้าร้านก่อน เพื่อให้ระบบรู้ว่าร้านนี้คือใคร
                                 </Typography>
+                            </Box>
+
+                            <Box className="grid gap-4 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
+                                <TextField
+                                    label="ชื่อร้าน"
+                                    value={shopName}
+                                    onChange={(event) => setShopName(event.target.value)}
+                                    fullWidth
+                                    error={!!shopError}
+                                    helperText={shopError || "เช่น ฟูลแทงค์ พรีเมียม เรนทัล"}
+                                />
+
+                                <TextField
+                                    label="ชื่อโดเมนของร้าน"
+                                    value={domainSlug}
+                                    onChange={(event) =>
+                                        setDomainSlug(normalizeDomainSlug(event.target.value))
+                                    }
+                                    fullWidth
+                                    error={!!domainError}
+                                    helperText={
+                                        domainError ||
+                                        "ใช้ภาษาอังกฤษ ตัวเลข และขีดกลางเท่านั้น เช่น fulltank-garage"
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Typography className="text-sm font-semibold text-slate-500">
+                                                    .{RENTFLOW_ROOT_DOMAIN}
+                                                </Typography>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
                             </Box>
 
                             <Box className="rounded-[30px] border border-slate-200 bg-slate-50 p-4 md:p-5">
@@ -445,7 +515,7 @@ export default function StoreSetupPage() {
 
                                     <Box className="min-w-0 flex-1">
                                         <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
-                                            โลโก้ร้าน
+                                            2. โลโก้ร้าน
                                         </Typography>
                                         <Typography className="mt-1 text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
                                             ใช้แสดงบนแถบเมนู โปรไฟล์ร้าน และหน้าร้าน
@@ -519,7 +589,7 @@ export default function StoreSetupPage() {
 
                                     <Box className="grid gap-1">
                                         <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
-                                            รูปโปรโมชันหน้าร้าน
+                                            3. รูปโปรโมชันหน้าร้าน
                                         </Typography>
                                         <Typography className="text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
                                             เลือกได้หลายรูป ระบบจะเลื่อนโชว์บนหน้าแรกของร้านโดยอัตโนมัติ
@@ -562,44 +632,10 @@ export default function StoreSetupPage() {
                                 </Stack>
                             </Box>
 
-                            <Box className="grid gap-4">
-                                <TextField
-                                    label="ชื่อร้าน"
-                                    value={shopName}
-                                    onChange={(event) => setShopName(event.target.value)}
-                                    fullWidth
-                                    error={!!shopError}
-                                    helperText={shopError || "เช่น ฟูลแทงค์ พรีเมียม เรนทัล"}
-                                />
-
-                                <TextField
-                                    label="ชื่อโดเมนของร้าน"
-                                    value={domainSlug}
-                                    onChange={(event) =>
-                                        setDomainSlug(normalizeDomainSlug(event.target.value))
-                                    }
-                                    fullWidth
-                                    error={!!domainError}
-                                    helperText={
-                                        domainError ||
-                                        "ใช้ภาษาอังกฤษ ตัวเลข และขีดกลางเท่านั้น เช่น fulltank-garage"
-                                    }
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <Typography className="text-sm font-semibold text-slate-500">
-                                                    .{RENTFLOW_ROOT_DOMAIN}
-                                                </Typography>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Box>
-
                             <Box className="grid gap-4 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
                                 <Box className="grid gap-1">
                                     <Typography className="text-[1.02rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.1rem]">
-                                        ช่องทางติดต่อหน้าร้าน
+                                        4. ช่องทางติดต่อหน้าร้าน
                                     </Typography>
                                     <Typography className="text-[0.92rem] leading-7 text-slate-500 md:text-[0.97rem]">
                                         ข้อมูลส่วนนี้จะแสดงใน footer ของหน้าร้าน เพื่อให้ลูกค้าติดต่อร้านได้ทันที
@@ -686,7 +722,7 @@ export default function StoreSetupPage() {
 
                             <Box className="grid gap-3 rounded-[30px] border border-slate-200 bg-white p-4 md:p-5">
                                 <Typography className="text-[1rem] font-bold tracking-[-0.03em] text-slate-950 md:text-[1.06rem]">
-                                    ตัวอย่างลิงก์หน้าร้าน
+                                    5. ตัวอย่างลิงก์หน้าร้าน
                                 </Typography>
                                 <Typography className="break-all text-[1.3rem] font-black tracking-[-0.045em] text-slate-950 md:text-[1.9rem]">
                                     https://{storefrontDomain}
